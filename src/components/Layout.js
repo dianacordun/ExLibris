@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet';
-import Navbar from './Navbar';
+import NavBar from './Navbar';
 
 const Layout = ({title, content, children}) => (
     <>
@@ -7,7 +7,7 @@ const Layout = ({title, content, children}) => (
             <title>{title}</title>
             <meta name = 'description' content={content} />
         </Helmet>
-        <Navbar/>
+        <NavBar/>
         <div className="container mt-5">
             {children}
         </div>

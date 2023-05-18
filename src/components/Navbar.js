@@ -1,39 +1,36 @@
 import { Link, NavLink } from 'react-router-dom';
+import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 
-const Navbar = () => {
-
-  const authLinks = (
-    <>
-      <li className="nav-item active">  
-        <NavLink className='nav-link' to='/join'>
-          Join
-        </NavLink>
-      </li>
-    </>
-  );
-
-
+const NavBar = () => {
 
     return (
-      <nav className="navbar navbar-expand-sm navbar-light bg-light">
-        <Link className='navbar-brand' to='/'> ExLibris </Link>
-        
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </button>
+      <Navbar bg="light" expand="sm">
+        <Link className="navbar-brand" to="/">
+          ExLibris
+        </Link>
+        <Navbar.Toggle aria-controls="navbarNav" />
 
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav">
-            <li className="nav-item active">
-              <NavLink className='nav-link' to='/'>
-                Home
-              </NavLink>
-            </li>
-            {/* add links here  */}
-          </ul>
-        </div>
-      </nav>
+        <Navbar.Collapse id="navbarNav">
+          <Nav className="mr-auto">
+            <NavDropdown title="Home" id="navbarDropdownMenuLink">
+              <NavDropdown.Item as={NavLink} to="/signout">
+                Sign Out
+              </NavDropdown.Item>
+            </NavDropdown>
+            <Nav.Item>
+              <Nav.Link as={NavLink} to="/profile">
+                Profile
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link as={NavLink} to="/add">
+                Add a book
+              </Nav.Link>
+            </Nav.Item>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
     );
   };
   
-  export default Navbar;
+  export default NavBar;

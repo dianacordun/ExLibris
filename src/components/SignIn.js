@@ -1,10 +1,12 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Button, Form, Container, Row, Col, Image  } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {  signInWithEmailAndPassword   } from 'firebase/auth';
 import { auth } from '../firebase';
 import './Forms.css';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../features/user/userSlice';
 
 
  
@@ -14,6 +16,9 @@ const SignIn = () => {
     const [error, setError] = useState('');
     const [validated, setValidated] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
+    const dispatch = useDispatch()
+
        
     const handleSubmit = (e) => {
         const form = e.currentTarget;
@@ -29,6 +34,10 @@ const SignIn = () => {
                 // Signed in
                 const user = userCredential.user;
                 console.log(user);
+                dispatch(setUser({id: user.uid, email: user.email}));
+
+                // Save user in local storage
+                localStorage.setItem('user', JSON.stringify({id: user.uid, email: user.email}));
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -52,8 +61,9 @@ const SignIn = () => {
             });
           
         setValidated(true);
-
+        navigate('/');
     }   
+
   return (
     <Container fluid className="p-0">
       <Row className=" align-items-center">

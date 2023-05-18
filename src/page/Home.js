@@ -1,24 +1,45 @@
-import React from 'react';
-import { signOut } from "firebase/auth";
-import { auth } from '../firebase';
-import { useNavigate } from 'react-router-dom';
 import Layout from "../components/Layout";
 import SignIn from '../components/SignIn';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
+import { setExistingProfile } from '../features/user/profileSlice';
 
+
+const checkProfileExists = async (userId) => {
+ 
+    const profileQuery = query(collection(db, 'profile'), where('userId', '==', userId));
+    const profileSnapshot = await getDocs(profileQuery);
+    
+    return !profileSnapshot.empty;
+};
 
 const Home = () => {
-    const navigate = useNavigate();
-    const isSignedIn = true;
+    const dispatch = useDispatch()
+    const user = useSelector((state) => state.user.value);
+    const userId = user?.id;
+    const isSignedIn = !!user ;
+    console.log(user);
 
-    // const handleLogout = () => {               
-    //     signOut(auth).then(() => {
-    //     // Sign-out successful.
-    //         navigate("/");
-    //         console.log("Signed out successfully")
-    //     }).catch((error) => {
-    //     // An error happened.
-    //     });
-    // }
+    useEffect(() => {
+        if(isSignedIn){
+            const checkIfExists = async () => {
+                const exists = await checkProfileExists(userId);
+                if (exists){
+                    // Add to state & local storage
+                    dispatch(setExistingProfile(true));
+                    localStorage.setItem('profileExists', 'true');
+                    };
+                }
+            
+                checkIfExists();
+        }else{
+            dispatch(setExistingProfile(false));
+            localStorage.removeItem('profileExists');
+        }
+      }, [userId, dispatch, isSignedIn]);
+
    
     return(
         <div>
