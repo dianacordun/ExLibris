@@ -1,64 +1,14 @@
-import React, { useState } from 'react';
-import { MDBCard, MDBCardBody, MDBCol, MDBInput, MDBRow, MDBTypography } from 'mdb-react-ui-kit';
-import { Button } from 'react-bootstrap';
+import React, { useState, useRef } from 'react';
+import { Image, Form, Button } from 'react-bootstrap';
+import { useSelector, } from 'react-redux';
 
-// export const EditProfile = () => {
-
-//     const [first_name, setFirstName] = useState('');
-//     const [last_name, setLastName] = useState('');
-//     const [profile_pic, setProfilePic] = useState('');
-//     const [error, setError] = useState('');
-//     return (
-//         <>
-//           <div className="mx-auto mt-5" style={{ maxWidth: '800px', height: '400px' }}>
-//             <MDBRow className="pt-5 mx-4 justify-content-center">
-//                 <MDBCard className="card-custom pb-4 shadow">
-//                   <MDBCardBody className="mt-0 mx-5">
-//                     <div className="text-center mb-3 pb-2 mt-3">
-//                       <MDBTypography tag="h4" style={{ color: '#495057' }} >Complete your profile</MDBTypography>
-//                     </div>
-    
-//                     <form className="mb-0" onSubmit={handleSubmit}>
-//                       {error && <p>{error}</p>}
-//                       <MDBRow className="mb-4">
-//                         <MDBCol>
-//                           <MDBInput label='First name' type='text' required  value={first_name}
-//                                     onChange={(event) => setFirstName(event.target.value)} />
-//                         </MDBCol>
-//                         <MDBCol>
-//                           <MDBInput label='Last name' type='text' required value={last_name}
-//                                     onChange={(event) => setLastName(event.target.value)}/>
-//                         </MDBCol>
-//                       </MDBRow>
-//                       <MDBRow className="mb-4">
-//                         <MDBCol>
-//                           <div className="form-outline">
-//                             <input type="file" className="form-control" id="profilePicture"  accept="image/*" value={profile_pic}
-//                                     onChange={(event) => setProfilePic(event.target.value)}/>
-//                             <label className="form-label" htmlFor="profilePicture">
-//                               Profile Picture
-//                             </label>
-//                           </div>
-//                         </MDBCol>
-//                       </MDBRow>
-//                       <div className="float-end">
-//                           <Button variant="primary" type="submit">Done</Button>
-//                       </div>
-//                     </form>
-//                   </MDBCardBody>
-//                 </MDBCard>
-//             </MDBRow>
-//           </div>
-//         </>
-//       );
-// }
-
-// export default EditProfile;
-
-
-const EditProfile = ({ picture, firstName, lastName, onSave }) => {
+const EditProfile = ({ picture, firstName, lastName, onSave, imageSize }) => {
   const [editedFirstName, setEditedFirstName] = useState(firstName);
   const [editedLastName, setEditedLastName] = useState(lastName);
+  const [editedPicture, setEditedPicture] = useState(null);
+  const fileInputRef = useRef(null);
+  const user = useSelector((state) => state.user.value);
+  const userId = user?.id;
 
   const handleFirstNameChange = (e) => {
     setEditedFirstName(e.target.value);
@@ -68,17 +18,48 @@ const EditProfile = ({ picture, firstName, lastName, onSave }) => {
     setEditedLastName(e.target.value);
   };
 
-  const handleSaveClick = () => {
-    onSave(editedFirstName, editedLastName);
+  const handlePictureChange = (e) => {
+    const file = e.target.files[0];
+    setEditedPicture(file);
   };
+
+  const handleSaveClick = () => {
+    onSave(userId, editedFirstName, editedLastName, editedPicture);
+  };
+
+  const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
 
   return (
     <div>
-      <img src={picture} alt="Profile" />
-      <input type="text" value={editedFirstName} onChange={handleFirstNameChange} />
-      <input type="text" value={editedLastName} onChange={handleLastNameChange} />
-      <button onClick={handleSaveClick}>Save</button>
+      <Image src={picture} alt="Profile" roundedCircle onClick={handleImageClick} style={imageSize} className="mb-2"/>
+      <Form>
+        <Form.Control
+          type="text"
+          className="mb-2"
+          value={editedFirstName}
+          onChange={handleFirstNameChange}
+        />
+        <Form.Control
+          type="text"
+          className="mb-2"
+          value={editedLastName}
+          onChange={handleLastNameChange}
+        />
+       <Form.Control
+          type="file"
+          className="mb-2"
+          accept="image/*"
+          onChange={handlePictureChange}
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+        />
+        <Button onClick={handleSaveClick}>Save</Button>
+      </Form>
     </div>
+    
   );
 };
 

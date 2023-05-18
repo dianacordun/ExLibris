@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import CreateProfile from '../components/profile/CreateProfile';
-import { useSelector, } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import ProfileManager from '../components/profile/ProfileManager';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
-
+import { db, storage } from '../firebase';
+import { getDownloadURL, ref } from 'firebase/storage';
+import { setProfileDetails } from '../features/user/profileDetailsSlice';
 
 const fetchProfileData = async (userId) => {
     try {
@@ -17,10 +18,13 @@ const fetchProfileData = async (userId) => {
             const profileData = profileDoc.data();
             
             // Access the fields in the profile document
-            const picture = profileData.profile_pic;
             const firstName = profileData.first_name;
             const lastName = profileData.last_name;
-            
+
+            // Picture might be null
+            const storageRef = ref(storage, `profile_pictures/${profileDoc.id}`);
+            const picture = await getDownloadURL(storageRef);
+
             // Do something with the retrieved profile data
             return [ picture, firstName, lastName ];
         } 
@@ -37,6 +41,8 @@ const Profile = () => {
   const user = useSelector((state) => state.user.value);
   const userId = user?.id;
 
+  const dispatch = useDispatch()
+
   // Checking to see if profile exists to display the proper page
   const profile = useSelector((state) => state.profile.value);
   const existingProfile = !!profile;
@@ -51,22 +57,19 @@ const Profile = () => {
           setPicture(pictureFetched);
           setFirstName(firstNameFetched);
           setLastName(lastNameFetched);
+          dispatch(setProfileDetails({firstName: firstName, lastName: lastName}));
         }
       }
     };
 
     fetchData();
-  }, [existingProfile, userId]);
+  }, [existingProfile, userId, dispatch, firstName, lastName]);
 
 
   return (
     <Layout title='ExLibris | Profile' content='Profile Page'>
       {existingProfile ? (
-      <ProfileManager 
-        picture={picture}
-        firstName={firstName}
-        lastName={lastName}  
-      />
+      <ProfileManager picture={picture}/>
       ) : (
       <CreateProfile userId={userId} />
       )}

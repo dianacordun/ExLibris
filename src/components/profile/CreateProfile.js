@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { MDBCard, MDBCardBody, MDBCol, MDBInput, MDBRow, MDBTypography } from 'mdb-react-ui-kit';
-import { db } from '../../firebase';
+import { db, storage } from '../../firebase';
 import { collection, addDoc } from "firebase/firestore";
-import '../Forms.css';
+import { ref, uploadBytes } from 'firebase/storage';
 import { setExistingProfile } from '../../features/user/profileSlice';
 import { useDispatch } from 'react-redux';
+import '../Forms.css';
 
 const CreateProfile = ({ userId }) => {
 
@@ -23,9 +24,18 @@ const CreateProfile = ({ userId }) => {
 
     try {
         const profileCollection = collection(db, 'profile');
-        const newUserProfile = await addDoc(profileCollection, { userId, first_name, last_name, profile_pic });
+        const newProfileDocRef = await addDoc(profileCollection, { userId, first_name, last_name });
         
-        console.log("PROFILE written with ID: ", newUserProfile.id);
+        if (profile_pic) {
+          const storageRef = ref(storage, `profile_pictures/${newProfileDocRef.id}`);
+          const metadata = {
+            contentType: profile_pic.type // Set the content type based on the file type
+          };
+          
+          await uploadBytes(storageRef, profile_pic, metadata);
+        }
+
+        console.log("PROFILE written with ID: ", newProfileDocRef.id);
 
         dispatch(setExistingProfile(true));
         localStorage.setItem('profileExists', 'true');
@@ -62,8 +72,17 @@ const CreateProfile = ({ userId }) => {
                   <MDBRow className="mb-4">
                     <MDBCol>
                       <div className="form-outline">
-                        <input type="file" className="form-control" id="profilePicture"  accept="image/*" value={profile_pic}
-                                onChange={(event) => setProfilePic(event.target.value)}/>
+                        <input type="file" 
+                                className="form-control" 
+                                id="profilePicture"  
+                                accept="image/*" 
+                                onChange={(event) => {
+                                  const file = event.target.files[0]; // Access the selected file
+                            
+                                  if (file) {
+                                    setProfilePic(file); // Set the File object to the state
+                                  }
+                                }}/>
                         <label className="form-label" htmlFor="profilePicture">
                           Profile Picture
                         </label>
