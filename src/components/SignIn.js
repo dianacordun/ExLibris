@@ -17,7 +17,7 @@ const SignIn = () => {
     const [validated, setValidated] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
        
     const handleSubmit = (e) => {

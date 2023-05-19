@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { setExistingProfile } from '../features/user/profileSlice';
 
 
-export const SignOut = () => {
+const SignOut = () => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch()
@@ -38,3 +38,5 @@ export const SignOut = () => {
         <></>
         )
 }
+
+export default SignOut;

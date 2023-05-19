@@ -1,14 +1,14 @@
+import { BrowserRouter as Router} from 'react-router-dom';
+import {Routes, Route} from 'react-router-dom';
 import Home from './page/Home';
 import Join from './components/Join';
 import SignIn from './components/SignIn';
-import { BrowserRouter as Router} from 'react-router-dom';
-import {Routes, Route} from 'react-router-dom';
-import PaginaTest from './page/PaginaTest';
 import AddBook from './page/AddBook';
 import Profile from './page/Profile';
-import { SignOut } from './components/SignOut';
+import SignOut from './components/SignOut';
+import ProtectedRoute from './components/ProtectedRoute';
+import NotFound from './components/NotFound';
 
- 
 function App() {
  
   return (
@@ -16,13 +16,18 @@ function App() {
       <div>
         <section>                              
             <Routes>
+              {/* Signed out users */}
                <Route path="/" element={<Home/>}/>
-               <Route path="/signin" element={<SignIn/>}/>
-               <Route path="/signout" element={<SignOut/>}/>
-               <Route path="/join" element={<Join/>}/>
-               <Route path="/profile" element={<Profile/>}/>
-               <Route path="/add" element={<AddBook/>}/>
-               <Route path="/test" element={<PaginaTest/>}/>
+               <Route  path="/signin" element={<ProtectedRoute private={false} component={SignIn} />}/>
+               <Route  path="/join" element={<ProtectedRoute private={false} component={Join} />}/>
+
+              {/* Signed in users */}
+               <Route  path="/signout" element={<ProtectedRoute private={true} component={SignOut} />}/>
+               <Route  path="/profile" element={<ProtectedRoute private={true} component={Profile} />}/>
+               <Route  path="/add" element={<ProtectedRoute private={true} component={AddBook} />}/>
+
+               {/* 404 */}
+               <Route path="*" element={<NotFound />} />
             </Routes>                    
         </section>
       </div>

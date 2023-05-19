@@ -16,8 +16,7 @@ const CreateProfile = ({ userId }) => {
   const [profile_pic, setProfilePic] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const dispatch = useDispatch()
-
+  const dispatch = useDispatch();
 
   const handleSubmit = async (event) => {
     event.preventDefault();

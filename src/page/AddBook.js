@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
 import Layout from '../components/Layout';
-import { db } from '../firebase';
+import { db, storage } from '../firebase';
+import { ref, uploadBytes } from 'firebase/storage';
 import { collection, addDoc } from "firebase/firestore";
+import { useSelector } from 'react-redux';
 
 const AddBook = () => {
     const [title, setTitle] = useState('');
@@ -14,16 +16,43 @@ const AddBook = () => {
     const [genre, setGenre] = useState('');
     const [status, setStatus] = useState('Not Started');
     const [error, setError] = useState('');
+    const [isValid, setIsValid] = useState(true);
     const navigate = useNavigate();
 
+    const user = useSelector((state) => state.user.value);
+    const userId = user?.id;
+
+    const handlePagesInput = (e) => {
+      const pages = e.target.value;
+  
+      // Validate the number using a regular expression
+      const isValidNumber = /^(0|[1-9][0-9]*)$/.test(pages);
+  
+      setPages(pages);
+      setIsValid(isValidNumber);
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        if (!isValid) {
+          return; // Don't submit the form if the number is not valid
+        }
+
         try {
             const bookCollection = collection(db, 'book');
-            const newBook = await addDoc(bookCollection, { title, author_fn, author_ln, cover, pages, genre, status });
-            console.log("Document written with ID: ", newBook.id);
+            const newBook = await addDoc(bookCollection, { userId, title, author_fn, author_ln, pages, genre, status });
+            
+            if (cover) {
+              const storageRef = ref(storage, `book_covers/${newBook.id}`);
+              const metadata = {
+                contentType: cover.type // Set the content type based on the file type
+              };
+              
+              await uploadBytes(storageRef, cover, metadata);
+            }
+            
+            console.log("Book written with ID: ", newBook.id);
             navigate('/');
 
         } catch (error) {
@@ -31,6 +60,21 @@ const AddBook = () => {
             console.error(error);
         }
   };
+
+  const genreOptions = [
+      'Action and Adventure',
+      'Biography',
+      'Children',
+      'Comics and Graphic Novels',
+      'Fantasy',
+      'Historical Fiction',
+      'Horror',
+      'Mystery',
+      'Romance',
+      'Science Fiction',
+      'Thriller and Suspense',
+      'Young Adult',
+    ];
 
   return (
     <Layout title="ExLibris | Add Book" content="Add a new book to your collection">
@@ -77,8 +121,12 @@ const AddBook = () => {
               type="file"
               className="mb-1"
               accept="image/*"
-              value={cover}
-              onChange={(event) => setCover(event.target.value)}
+              onChange={(event) => {
+                const file = event.target.files[0];
+                if (file) {
+                  setCover(file);
+                }
+              }}
             />
           </Form.Group>
           <Form.Group controlId="pages">
@@ -89,8 +137,14 @@ const AddBook = () => {
               required
               placeholder=""
               value={pages}
-              onChange={(event) => setPages(event.target.value)}
+              onChange={handlePagesInput}
+              isInvalid={!isValid}
             />
+            {!isValid && (
+          <Form.Control.Feedback type="invalid">
+            Please enter a valid number.
+          </Form.Control.Feedback>
+          )}
           </Form.Group>
           <Form.Group controlId="genre">
             <Form.Label>Genre</Form.Label>
@@ -100,8 +154,11 @@ const AddBook = () => {
               value={genre}
               onChange={(event) => setGenre(event.target.value)}
             >
-              <option>Fiction</option>
-              <option>Nonfiction</option>
+              {genreOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
             </Form.Control>
           </Form.Group>
           <Form.Group controlId="status">
@@ -126,4 +183,4 @@ const AddBook = () => {
   );
 }
 
-export default AddBook
+export default AddBook;
