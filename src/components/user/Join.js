@@ -2,10 +2,12 @@ import React, {useState} from 'react';
 import { Button, Form, Container, Row, Col, Image  } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { NavLink, useNavigate } from 'react-router-dom';
-import {  createUserWithEmailAndPassword   } from 'firebase/auth';
-import { auth } from '../firebase';
-import './Forms.css';
-
+import {  createUserWithEmailAndPassword  } from 'firebase/auth';
+import { auth } from '../../firebase';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../features/user/userSlice';
+import { signInWithGoogle, signInWithFacebook } from '../services/thirdparty';
+import '../Forms.css';
 
  
 const Join = () => {
@@ -15,7 +17,8 @@ const Join = () => {
     const [error, setError] = useState('');
     const [validated, setValidated] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-       
+    const dispatch = useDispatch();
+
     const handleSubmit = async (e) => {
         const form = e.currentTarget;
         e.preventDefault();
@@ -29,8 +32,11 @@ const Join = () => {
             .then((userCredential) => {
                 const user = userCredential.user;
                 console.log(user);
+
+                dispatch(setUser({id: user.uid, email: user.email}));
+                localStorage.setItem('user', JSON.stringify({id: user.uid, email: user.email}));
+
                 navigate("/");
-                // TODO: NAVIGATE TO MY PROFILE
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -56,6 +62,29 @@ const Join = () => {
         setValidated(true);
     }   
 
+    const handleGoogleSignIn = () => {
+        signInWithGoogle()
+            .then((user) => {
+                if (user) {
+                    dispatch(setUser({ id: user.uid, email: user.email }));
+                    localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email }));
+                    navigate("/");
+                }
+            })
+            .catch((error) => console.log(error));
+    };
+    
+    const handleFacebookSignIn = () => {
+        signInWithFacebook()
+            .then((user) => {
+                if (user) {
+                    dispatch(setUser({ id: user.uid, email: user.email }));
+                    localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email }));
+                    navigate("/");
+                }
+            })
+            .catch((error) => console.log(error));
+    };
 
   return (
     <Container fluid className="p-0">
@@ -91,9 +120,14 @@ const Join = () => {
                     </Form.Control.Feedback>
                 </Form.Group>
 
-                <Button variant="primary" type="submit">
-                    Submit
-                </Button>
+                <Container className="d-flex flex-column align-items-center">
+                    <Button variant="primary" type="submit">Sign In</Button>
+                    <p className="text-muted">
+                        OR
+                    </p>
+                    <Button variant="primary" className="mb-2" onClick={handleGoogleSignIn} >Sign in with Google</Button>
+                    <Button variant="primary" onClick={handleFacebookSignIn}>Sign in with Facebook</Button>
+                </Container>
 
                 {error && <p className="text-danger">{error}</p>}
 

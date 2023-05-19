@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react'
 import { signOut } from "firebase/auth";
-import { auth } from '../firebase';
+import { auth } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
-import { setUser } from '../features/user/userSlice';
+import { setUser } from '../../features/user/userSlice';
 import { useDispatch } from 'react-redux';
-import { setExistingProfile } from '../features/user/profileSlice';
+import { setExistingProfile } from '../../features/user/profileSlice';
 
 
 const SignOut = () => {

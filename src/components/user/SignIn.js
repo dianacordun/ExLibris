@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Button, Form, Container, Row, Col, Image  } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { NavLink, useNavigate } from 'react-router-dom';
-import {  signInWithEmailAndPassword   } from 'firebase/auth';
-import { auth } from '../firebase';
-import './Forms.css';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase';
+import '../Forms.css';
 import { useDispatch } from 'react-redux';
-import { setUser } from '../features/user/userSlice';
-
+import { setUser } from '../../features/user/userSlice';
+import { signInWithGoogle, signInWithFacebook } from '../services/thirdparty';
 
  
 const SignIn = () => {
@@ -64,6 +64,30 @@ const SignIn = () => {
         navigate('/');
     }   
 
+    const handleGoogleSignIn = () => {
+        signInWithGoogle()
+            .then((user) => {
+                if (user) {
+                    dispatch(setUser({ id: user.uid, email: user.email }));
+                    localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email }));
+                    navigate("/");
+                }
+            })
+            .catch((error) => console.log(error));
+    };
+
+    const handleFacebookSignIn = () => {
+        signInWithFacebook()
+            .then((user) => {
+                if (user) {
+                    dispatch(setUser({ id: user.uid, email: user.email }));
+                    localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email }));
+                    navigate("/");
+                }
+            })
+            .catch((error) => console.log(error));
+    };
+
   return (
     <Container fluid className="p-0">
       <Row className=" align-items-center">
@@ -93,14 +117,25 @@ const SignIn = () => {
                             {showPassword ? "Hide" : "Show"}
                         </Button>
                     </div>
+                    <p className="text-right display-8">
+                        {' '}
+                        <NavLink to="/forgot_password">
+                            Forgot your password?
+                        </NavLink>
+                    </p> 
                     <Form.Control.Feedback type="invalid">
                         Please enter your password.
                     </Form.Control.Feedback>
                 </Form.Group>
-
-                <Button variant="primary" type="submit">
-                    Submit
-                </Button>
+                
+                <Container className="d-flex flex-column align-items-center">
+                    <Button variant="primary" type="submit">Sign In</Button>
+                    <p className="text-muted">
+                        OR
+                    </p>
+                    <Button variant="primary" className="mb-2" onClick={handleGoogleSignIn}>Sign in with Google</Button>
+                    <Button variant="primary" onClick={handleFacebookSignIn}>Sign in with Facebook</Button>
+                </Container>
 
                 {error && <p className="text-danger">{error}</p>}
 

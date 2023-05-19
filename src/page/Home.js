@@ -1,5 +1,5 @@
 import Layout from "../components/Layout";
-import SignIn from '../components/SignIn';
+import SignIn from '../components/user/SignIn';
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { collection, query, where, getDocs } from 'firebase/firestore';
