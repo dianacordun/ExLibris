@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { Image, Form, Button } from 'react-bootstrap';
+import { Image, Form, Button, Container } from 'react-bootstrap';
 import { useSelector, } from 'react-redux';
 
-const EditProfile = ({ picture, firstName, lastName, onSave, imageSize }) => {
+const EditProfile = ({ picture, firstName, lastName, onSave, onDelete, imageSize }) => {
   const [editedFirstName, setEditedFirstName] = useState(firstName);
   const [editedLastName, setEditedLastName] = useState(lastName);
   const [editedPicture, setEditedPicture] = useState(null);
@@ -21,6 +21,10 @@ const EditProfile = ({ picture, firstName, lastName, onSave, imageSize }) => {
   const handlePictureChange = (e) => {
     const file = e.target.files[0];
     setEditedPicture(file);
+  };
+
+  const handleDeleteClick = () => {
+    onDelete(userId);
   };
 
   const handleSaveClick = () => {
@@ -56,7 +60,12 @@ const EditProfile = ({ picture, firstName, lastName, onSave, imageSize }) => {
           ref={fileInputRef}
           style={{ display: 'none' }}
         />
-        <Button onClick={handleSaveClick}>Save</Button>
+        <Container className="p-2">
+          <Button onClick={handleSaveClick}>Save</Button>
+        </Container>
+        <Container className="d-flex justify-content-end">
+          <Button variant="danger" onClick={handleDeleteClick}>Delete Account</Button>
+        </Container>
       </Form>
     </div>
     

@@ -121,12 +121,12 @@ const Join = () => {
                 </Form.Group>
 
                 <Container className="d-flex flex-column align-items-center">
-                    <Button variant="primary" type="submit">Sign In</Button>
+                    <Button variant="primary" type="submit">Join</Button>
                     <p className="text-muted">
                         OR
                     </p>
-                    <Button variant="primary" className="mb-2" onClick={handleGoogleSignIn} >Sign in with Google</Button>
-                    <Button variant="primary" onClick={handleFacebookSignIn}>Sign in with Facebook</Button>
+                    <Button variant="primary" className="mb-2" onClick={handleGoogleSignIn} >Continue with Google</Button>
+                    <Button variant="primary" onClick={handleFacebookSignIn}>Continue with Facebook</Button>
                 </Container>
 
                 {error && <p className="text-danger">{error}</p>}

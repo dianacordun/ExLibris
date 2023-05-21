@@ -23,7 +23,16 @@ const fetchProfileData = async (userId) => {
 
             // Picture might be null
             const storageRef = ref(storage, `profile_pictures/${profileDoc.id}`);
-            const picture = await getDownloadURL(storageRef);
+            let picture = '';
+            try {
+               picture = await getDownloadURL(storageRef);
+            } catch (error) {
+              if (error.code === 'storage/object-not-found') {
+                console.log('Profile picture does not exist');
+              } else {
+                throw error;
+              }
+            }
 
             // Do something with the retrieved profile data
             return [ picture, firstName, lastName ];
