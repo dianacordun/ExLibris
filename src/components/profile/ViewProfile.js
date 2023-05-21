@@ -8,7 +8,7 @@ const ViewProfile = ({ picture, firstName, lastName, imageSize}) => {
       { picture ? (
         <Image src={picture} alt="Profile" roundedCircle style={imageSize} />
       ):(
-        <Image src="/defaultProfilePic.png" alt="Profile" roundedCircle  style={imageSize}/>
+        <Image src="/defaultProfilePic.png" alt="Profile" roundedCircle style={imageSize}/>
       )
 
       }

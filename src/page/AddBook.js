@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
 import Layout from '../components/Layout';
 import { db, storage } from '../firebase';
-import { ref, uploadBytes } from 'firebase/storage';
-import { collection, addDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { collection, doc, setDoc, updateDoc } from "firebase/firestore";
 import { useSelector } from 'react-redux';
+import genreOptions from '../config';
+import generateSearchKeywords from '../utils';
 
 const AddBook = () => {
     const [title, setTitle] = useState('');
@@ -40,41 +42,53 @@ const AddBook = () => {
         }
 
         try {
-            const bookCollection = collection(db, 'book');
-            const newBook = await addDoc(bookCollection, { userId, title, author_fn, author_ln, pages, genre, status });
-            
-            if (cover) {
-              const storageRef = ref(storage, `book_covers/${newBook.id}`);
-              const metadata = {
-                contentType: cover.type // Set the content type based on the file type
-              };
-              
-              await uploadBytes(storageRef, cover, metadata);
-            }
-            
-            console.log("Book written with ID: ", newBook.id);
-            navigate('/');
+          const bookCollection = collection(db, 'book');
+          const newBookRef = doc(bookCollection); // Create a new document reference
+          const newBookId = newBookRef.id; // Get the newly generated document ID
+          
+          const searchKeywords = generateSearchKeywords(title, author_fn, author_ln);
+          // Create a new book object with the cover URL included
+          const newBook = {
+            userId,
+            title,
+            author_fn,
+            author_ln,
+            pages,
+            genre,
+            status,
+            coverUrl: '', // Placeholder for the cover URL
+            searchKeywords: searchKeywords,
+          };
+      
+          // Add the book data to Firestore
+          await setDoc(newBookRef, newBook);
+      
+          if (cover) {
+            const storageRef = ref(storage, `book_covers/${newBookId}`);
+            const metadata = {
+              contentType: cover.type, 
+            };
+      
+            // Upload the cover image to Firebase Storage
+            await uploadBytes(storageRef, cover, metadata);
+      
+            // Get the download URL of the uploaded image
+            const downloadURL = await getDownloadURL(storageRef);
+      
+            // Update the book object with the actual cover URL
+            newBook.coverUrl = downloadURL;
+            // Update the book document in Firestore with the cover URL
+            await updateDoc(newBookRef, { coverUrl: downloadURL });
+          }
+      
+          console.log("Book written with ID:", newBookId);
+          navigate('/');
 
         } catch (error) {
             setError('Failed to add book. Please try again.');
             console.error(error);
         }
   };
-
-  const genreOptions = [
-      'Action and Adventure',
-      'Biography',
-      'Children',
-      'Comics and Graphic Novels',
-      'Fantasy',
-      'Historical Fiction',
-      'Horror',
-      'Mystery',
-      'Romance',
-      'Science Fiction',
-      'Thriller and Suspense',
-      'Young Adult',
-    ];
 
   return (
     <Layout title="ExLibris | Add Book" content="Add a new book to your collection">

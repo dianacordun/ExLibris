@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import { setExistingProfile } from '../features/user/profileSlice';
+import Dashboard from "../components/books/Dashboard";
 
 
 const checkProfileExists = async (userId) => {
@@ -45,7 +46,7 @@ const Home = () => {
         <div>
             {isSignedIn ? (
                 <Layout title='ExLibris | Home' content='Home Page'>
-                <p>Welcome, Diana!</p>
+                    <Dashboard userId = {userId}/>
                 </Layout>
                 ) : (
                 <SignIn/>

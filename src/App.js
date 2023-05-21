@@ -9,6 +9,7 @@ import AddBook from './page/AddBook';
 import Profile from './page/Profile';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from './components/NotFound';
+import './App.css';
 
 function App() {
  
