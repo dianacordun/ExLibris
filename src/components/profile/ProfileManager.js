@@ -19,7 +19,8 @@ const ProfileManager = ({ picture }) => {
     const firstName = useSelector(state => state.profileDetails.value.firstName);
     const lastName = useSelector(state => state.profileDetails.value.lastName);
     const user = useSelector((state) => state.user.value);
-    const userId = user?.id; // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line
+    const userId = user?.id; 
 
     const [isEditing, setIsEditing] = useState(false);
     const imageSize = {
