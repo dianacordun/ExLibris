@@ -6,7 +6,7 @@ import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '../../firebase';
 import genreOptions from '../../config';
 
-const Dashboard = ({userId}) => {
+const Dashboard = ({ userId }) => {
 
     const [books, setBooks] = useState([]);
     const [statusFilter, setStatusFilter] = useState(''); 
@@ -136,17 +136,18 @@ const Dashboard = ({userId}) => {
             <Row xs={1} md={2} lg={3} xl={4} xxl={5} className="g-4">
                 {books.map((book) => (
                     <Col key={book.id}>
+                        <Link to={`/books/${book.id}`} className="card-link">
                         <Card className="card">
                             {book.coverUrl ? (
                                 <Card.Img variant="top" src={book.coverUrl} alt={book.title} className="card-image"/>
                             ) : (
                                 <Card.Img variant="top" src="/default_book.png" alt={book.title} className="card-image" />
                             )}
-                        
                         <Card.Body>
                             <Card.Title>{book.title}</Card.Title>
                         </Card.Body>
                         </Card>
+                        </Link>
                     </Col>
                 ))}
             </Row>

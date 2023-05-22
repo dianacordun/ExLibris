@@ -43,7 +43,7 @@ const fetchProfileData = async (userId) => {
 };
 
 const Profile = () => {
-
+  const [loading, setLoading] = useState(true);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [picture, setPicture] = useState('');
@@ -69,12 +69,16 @@ const Profile = () => {
           dispatch(setProfileDetails({firstName: firstName, lastName: lastName}));
         }
       }
+      setLoading(false);
     };
 
     fetchData();
   }, [existingProfile, userId, dispatch, firstName, lastName]);
 
-
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  
   return (
     <Layout title='ExLibris | Profile' content='Profile Page'>
       {existingProfile ? (

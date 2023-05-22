@@ -89,7 +89,7 @@ const SignIn = () => {
     };
 
   return (
-    <Container fluid className="p-0">
+    <Container fluid className="p-0 auth-form">
       <Row className=" align-items-center">
         <Col className="p-0 d-none d-md-block">
         <Image src="signin.jpg" style={{ width: '90vw', height: '100vh' }} fluid />

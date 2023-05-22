@@ -1,12 +1,11 @@
-body {
-    overflow: hidden;
-  }
 
 p {
 padding-top: 20px;
 }
 
-
+.auth-form {
+    overflow: hidden;
+}
   
 .card-custom {
 border-bottom-left-radius: 10% 50%;

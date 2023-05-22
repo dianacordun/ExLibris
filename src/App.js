@@ -5,6 +5,7 @@ import Join from './components/user/Join';
 import SignIn from './components/user/SignIn';
 import SignOut from './components/user/SignOut';
 import ForgotPassword from './components/user/ForgotPassword';
+import BookDetails from './components/books/BookDetails';
 import AddBook from './page/AddBook';
 import Profile from './page/Profile';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -20,14 +21,15 @@ function App() {
             <Routes>
               {/* Signed out users */}
                <Route path="/" element={<Home/>}/>
-               <Route  path="/signin" element={<ProtectedRoute private={false} component={SignIn} />}/>
-               <Route  path="/join" element={<ProtectedRoute private={false} component={Join} />}/>
-               <Route  path="/forgot_password" element={<ProtectedRoute private={false} component={ForgotPassword} />}/>
+               <Route path="/signin" element={<ProtectedRoute private={false} component={SignIn} />}/>
+               <Route path="/join" element={<ProtectedRoute private={false} component={Join} />}/>
+               <Route path="/forgot_password" element={<ProtectedRoute private={false} component={ForgotPassword} />}/>
 
               {/* Signed in users */}
-               <Route  path="/signout" element={<ProtectedRoute private={true} component={SignOut} />}/>
-               <Route  path="/profile" element={<ProtectedRoute private={true} component={Profile} />}/>
-               <Route  path="/add" element={<ProtectedRoute private={true} component={AddBook} />}/>
+               <Route path="/signout" element={<ProtectedRoute private={true} component={SignOut} />}/>
+               <Route path="/profile" element={<ProtectedRoute private={true} component={Profile} />}/>
+               <Route path="/add" element={<ProtectedRoute private={true} component={AddBook} />}/>
+               <Route exact path="/books/:bookId" element={<ProtectedRoute private={true} component={BookDetails} />}/>
 
                {/* 404 */}
                <Route path="*" element={<NotFound />} />
