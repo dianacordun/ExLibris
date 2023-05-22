@@ -10,7 +10,6 @@ const ViewProfile = ({ picture, firstName, lastName, imageSize}) => {
       ):(
         <Image src="/defaultProfilePic.png" alt="Profile" roundedCircle style={imageSize}/>
       )
-
       }
       <h2>{firstName} {lastName}</h2>
     </Container>

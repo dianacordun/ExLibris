@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container, Row, Col, Card, Form, InputGroup, Button } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '../../firebase';
 import genreOptions from '../../config';
@@ -131,6 +132,7 @@ const Dashboard = ({userId}) => {
                     </Form.Group>
                 </Row>
             </Form>
+            {books.length > 0 ? (
             <Row xs={1} md={2} lg={3} xl={4} xxl={5} className="g-4">
                 {books.map((book) => (
                     <Col key={book.id}>
@@ -148,6 +150,14 @@ const Dashboard = ({userId}) => {
                     </Col>
                 ))}
             </Row>
+            ) : (
+                <div className="text-center mt-5">
+                    <p>It looks like you don't have any books in your library</p>
+                    <Link to="/add" className="btn btn-primary">
+                    Add your first book
+                    </Link>
+                </div>
+            )}
         </Container>
     </div>
   )

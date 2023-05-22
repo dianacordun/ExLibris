@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import EditProfile  from './EditProfile';
 import ViewProfile from './ViewProfile';
+import ErrorPopup from '../popups/ErrorPopup';
 import { db, storage, auth } from '../../firebase';
 import { collection, query, where, doc, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
 import { ref, uploadBytes, deleteObject, getDownloadURL} from 'firebase/storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { setProfileDetails } from '../../features/user/profileDetailsSlice';
-import { deleteUser, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
+import { deleteUser, EmailAuthProvider, reauthenticateWithCredential, reauthenticateWithPopup, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { setExistingProfile } from '../../features/user/profileSlice';
 import { setUser } from '../../features/user/userSlice';
@@ -23,10 +24,12 @@ const ProfileManager = ({ picture }) => {
     const userId = user?.id; 
 
     const [isEditing, setIsEditing] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupMessage, setPopupMessage] = useState(''); 
     const imageSize = {
-      width: '200px', // Specify the desired width
-      height: '200px', // Specify the desired height
-      objectFit: 'cover', // Adjust the image to cover the container
+      width: '200px',
+      height: '200px', 
+      objectFit: 'cover', 
     };  
 
     const promptUserForCredentials = () => {
@@ -83,9 +86,29 @@ const ProfileManager = ({ picture }) => {
       try {
         // Reauthenticate the user before proceeding with the deletion
         const user = auth.currentUser;
-        const credential = promptUserForCredentials(); // Implement your reauthentication prompt logic here
+        const isGoogleUser = user && user.providerData.some((userInfo) => userInfo.providerId === 'google.com');
+        const isFacebookUser = user && user.providerData.some((userInfo) => userInfo.providerId === 'facebook.com');
+        
+        if (!isGoogleUser && !isFacebookUser){           // Simple user
+          const credential = promptUserForCredentials(); 
+          await reauthenticateWithCredential(user, credential);
 
-        await reauthenticateWithCredential(user, credential);
+        } else {
+            const provider = isGoogleUser ? new GoogleAuthProvider() : new FacebookAuthProvider();
+          
+            try {
+              await reauthenticateWithPopup(user, provider);
+            } catch (error) {
+              if (error.code === 'auth/user-mismatch') {
+                console.error('User mismatch');
+                setPopupMessage('User mismatch! Please make sure you are using the correct account.');
+                setShowPopup(true);
+                return;
+              }
+              console.error('Failed to reauthenticate with Google/Facebook', error);
+            }
+        }
+
         // Delete the user from Firebase Authentication
         await deleteUser(auth.currentUser);
 
@@ -189,6 +212,11 @@ const ProfileManager = ({ picture }) => {
         />
       )}
       {!isEditing && <Button onClick={handleEditClick}>Edit</Button>}
+      <ErrorPopup
+        show={showPopup}
+        onClose={() => setShowPopup(false)}
+        message={popupMessage}
+      />
     </>
     );
 };
