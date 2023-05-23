@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
 import Layout from '../components/Layout';
@@ -23,6 +23,13 @@ const AddBook = () => {
 
     const user = useSelector((state) => state.user.value);
     const userId = user?.id;
+    const profile = useSelector((state) => state.profile.value);
+
+    useEffect(() => {
+      if(!profile){
+        navigate('/profile');
+      }
+    }, [profile, navigate]);
 
     const handlePagesInput = (e) => {
       const pages = e.target.value;

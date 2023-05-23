@@ -24,3 +24,7 @@
     object-fit: cover;
     height: 200px; 
 }
+
+.book-cover-modal{
+    height: 150px; 
+}

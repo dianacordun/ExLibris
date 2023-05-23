@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Button, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { MDBCard, MDBCardBody, MDBCol, MDBInput, MDBRow, MDBTypography } from 'mdb-react-ui-kit';
 import { db, storage } from '../../firebase';
@@ -15,8 +15,18 @@ const CreateProfile = ({ userId }) => {
   const [last_name, setLastName] = useState('');
   const [profile_pic, setProfilePic] = useState('');
   const [error, setError] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+
+  useEffect(() => {
+    setShowPopup(true);
+  }, []);
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -48,6 +58,21 @@ const CreateProfile = ({ userId }) => {
 
   return (
     <>
+    {/* Popup Modal */}
+    <Modal show={showPopup} onHide={handleClosePopup} backdrop="static" keyboard={false}>
+        <Modal.Header closeButton>
+          <Modal.Title>Complete your profile to proceed.</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Before you start building your library, you must complete your profile.</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClosePopup}>
+            Ok
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* Rest of the component */}
       <div className="mx-auto mt-5" style={{ maxWidth: '800px', height: '400px' }}>
         <MDBRow className="pt-5 mx-4 justify-content-center">
             <MDBCard className="card-custom pb-4 shadow">

@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Form, Button, Container, Row, Col, Image } from 'react-bootstrap';
+import { Form, Button, Col, Image } from 'react-bootstrap';
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db, storage } from '../../firebase';
 import { ref, deleteObject, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Layout from '../Layout';
+import generateSearchKeywords from '../../utils';
+import ReadingModal from '../popups/ReadingModal';
 
 const BookDetails = () => {
     const { bookId } = useParams();
@@ -23,6 +25,9 @@ const BookDetails = () => {
     const [coverImage, setCoverImage] = useState(null);
     const [coverImageUrl, setCoverImageUrl] = useState('');
     const [deleteImage, setDeleteImage] = useState(false);
+
+    // Start reading logic 
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         const fetchBookDetails = async () => {
@@ -76,6 +81,9 @@ const BookDetails = () => {
       const handleDeleteImage = () => {
         setDeleteImage(true);
       };
+      const handleCloseModal = () => {
+        setShowModal(false);
+      };
 
       const handleUpdate = async (e) => {
         e.preventDefault();
@@ -89,7 +97,7 @@ const BookDetails = () => {
             author_ln: authorLn,
             genre: book.genre,
             pages: book.pages,
-            searchKeywords: book.searchKeywords,
+            searchKeywords: generateSearchKeywords(title, authorFn, authorLn),
             status: book.status,
             coverUrl: coverImageUrl,
             };
@@ -128,8 +136,7 @@ const BookDetails = () => {
         console.error('Failed to update book:', error);
       }
       };
-    
-      
+          
     if (!book) {
         return <div>Loading...</div>;
     }
@@ -210,7 +217,20 @@ const BookDetails = () => {
                 <p>Genre: {book.genre}</p>
                 <p>Pages: {book.pages}</p>
                 <p>Status: {book.status}</p>
-                <Button variant="primary" onClick={handleEdit}>Edit</Button>
+                <Button variant="primary" className='btn-space' onClick={handleEdit}>Edit</Button>
+                {book.status === 'Currently Reading' ? (
+                    <Button variant='primary' onClick={() => setShowModal(true)}>
+                    Continue Reading
+                    </Button>
+                ) : (
+                    <Button variant='primary' onClick={() => setShowModal(true)}>Start Reading</Button>
+                )}
+
+                <ReadingModal
+                    book={book}
+                    showModal={showModal}
+                    handleCloseModal={handleCloseModal}
+                />
             </>
           )}
     </Layout>

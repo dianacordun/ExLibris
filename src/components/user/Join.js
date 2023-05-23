@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { Button, Form, Container, Row, Col, Image  } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { NavLink, useNavigate } from 'react-router-dom';
-import {  createUserWithEmailAndPassword  } from 'firebase/auth';
+import {  createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../features/user/userSlice';
@@ -19,6 +19,18 @@ const Join = () => {
     const [showPassword, setShowPassword] = useState(false);
     const dispatch = useDispatch();
 
+    useEffect(() => {
+        // Check if the user is already signed in
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            navigate('/profile');
+            dispatch(setUser({ id: user.uid, email: user.email }));
+            localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email }));
+            
+          }
+        });
+      }, [dispatch, navigate]);
+
     const handleSubmit = async (e) => {
         const form = e.currentTarget;
         e.preventDefault();
@@ -33,10 +45,11 @@ const Join = () => {
                 const user = userCredential.user;
                 console.log(user);
 
+                navigate('/profile');
                 dispatch(setUser({id: user.uid, email: user.email}));
                 localStorage.setItem('user', JSON.stringify({id: user.uid, email: user.email}));
+                
 
-                navigate("/");
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -66,9 +79,9 @@ const Join = () => {
         signInWithGoogle()
             .then((user) => {
                 if (user) {
+                    navigate('/profile');
                     dispatch(setUser({ id: user.uid, email: user.email }));
                     localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email }));
-                    navigate("/");
                 }
             })
             .catch((error) => console.log(error));
@@ -78,9 +91,9 @@ const Join = () => {
         signInWithFacebook()
             .then((user) => {
                 if (user) {
+                    navigate('/profile');
                     dispatch(setUser({ id: user.uid, email: user.email }));
                     localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email }));
-                    navigate("/");
                 }
             })
             .catch((error) => console.log(error));

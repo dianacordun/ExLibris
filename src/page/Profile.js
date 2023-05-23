@@ -16,6 +16,7 @@ const fetchProfileData = async (userId) => {
         if (!profileSnapshot.empty) {
             const profileDoc = profileSnapshot.docs[0];
             const profileData = profileDoc.data();
+
             
             // Access the fields in the profile document
             const firstName = profileData.first_name;
