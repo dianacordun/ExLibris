@@ -65,6 +65,8 @@ const AddBook = () => {
             status,
             coverUrl: '', // Placeholder for the cover URL
             searchKeywords: searchKeywords,
+            timeRead: 0,
+            pagesRead: 0,
           };
       
           // Add the book data to Firestore
@@ -173,6 +175,7 @@ const AddBook = () => {
               className="mb-1"
               as="select"
               value={genre}
+              required
               onChange={(event) => setGenre(event.target.value)}
             >
               {genreOptions.map((option) => (

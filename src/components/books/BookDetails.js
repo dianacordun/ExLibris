@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Form, Button, Col, Image } from 'react-bootstrap';
-import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { Form, Button, Col, Image, Row } from 'react-bootstrap';
+import { collection, addDoc, doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db, storage } from '../../firebase';
 import { ref, deleteObject, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Layout from '../Layout';
 import generateSearchKeywords from '../../utils';
 import ReadingModal from '../popups/ReadingModal';
+import Sessions from './Sessions';
 
 const BookDetails = () => {
     const { bookId } = useParams();
@@ -18,13 +19,11 @@ const BookDetails = () => {
     const [title, setTitle] = useState('');
     const [authorFn, setAuthorFn] = useState('');
     const [authorLn, setAuthorLn] = useState('');
-    const [genre, setGenre] = useState('');
-    const [pages, setPages] = useState('');
-    const [searchKeywords, setSearchKeywords] = useState([]);
-    const [status, setStatus] = useState('');
     const [coverImage, setCoverImage] = useState(null);
     const [coverImageUrl, setCoverImageUrl] = useState('');
     const [deleteImage, setDeleteImage] = useState(false);
+    const [ startPage, setStartPage ] = useState(0);
+
 
     // Start reading logic 
     const [showModal, setShowModal] = useState(false);
@@ -40,10 +39,6 @@ const BookDetails = () => {
                    setTitle(bookData.title);
                    setAuthorFn(bookData.author_fn);
                    setAuthorLn(bookData.author_ln);
-                   setGenre(bookData.genre);
-                   setPages(bookData.pages);
-                   setSearchKeywords(bookData.searchKeywords);
-                   setStatus(bookData.status);
                    setCoverImageUrl(bookData.coverUrl);
                 } else {
                   console.log("Book was not found.");
@@ -66,10 +61,6 @@ const BookDetails = () => {
         setTitle(book.title);
         setAuthorFn(book.author_fn);
         setAuthorLn(book.author_ln);
-        setGenre(book.genre);
-        setPages(book.pages);
-        setSearchKeywords(book.searchKeywords);
-        setStatus(book.status);
       };
       const handleImageClick = () => {
         fileInputRef.current.click();
@@ -81,10 +72,6 @@ const BookDetails = () => {
       const handleDeleteImage = () => {
         setDeleteImage(true);
       };
-      const handleCloseModal = () => {
-        setShowModal(false);
-      };
-
       const handleUpdate = async (e) => {
         e.preventDefault();
         
@@ -95,10 +82,7 @@ const BookDetails = () => {
             title,
             author_fn: authorFn,
             author_ln: authorLn,
-            genre: book.genre,
-            pages: book.pages,
             searchKeywords: generateSearchKeywords(title, authorFn, authorLn),
-            status: book.status,
             coverUrl: coverImageUrl,
             };
         
@@ -124,10 +108,6 @@ const BookDetails = () => {
             setTitle('');
             setAuthorFn('');
             setAuthorLn('');
-            setGenre('');
-            setPages('');
-            setSearchKeywords([]);
-            setStatus('');
             setDeleteImage(false);
             setEditMode(false);
             console.log('Book updated successfully');
@@ -136,6 +116,59 @@ const BookDetails = () => {
         console.error('Failed to update book:', error);
       }
       };
+
+    const handleReread = async () => {
+        try {
+            const bookRef = doc(db, 'book', bookId);
+            const updatedFields = {
+                pagesRead: 0,
+                status: 'Currently Reading',
+                timeRead: 0,
+            }
+            await updateDoc(bookRef, updatedFields);
+            setStartPage(0);
+            setShowModal(true);
+        } catch (error) {
+            console.error('Failed to update book for reread', error);
+        }
+    }  
+
+    const handleSimpleRead = () => {
+        setStartPage(book.pagesRead);
+        setShowModal(true);
+    }  
+
+    const handleCloseModal = async (timeSpentReading, currentPage) => {
+        if (!timeSpentReading && !currentPage){
+            setShowModal(false);
+            return;
+        }
+        // Updating book data
+        const bookRef = doc(db, 'book', bookId);
+        const oldPagesRead = book.pagesRead;
+        
+        const newStatus = (currentPage === book.pages) ? 'Read' : 'Currently Reading';
+        const updatedFields = {
+            pagesRead: currentPage,
+            status: newStatus,
+            timeRead: book.timeRead + timeSpentReading,
+        }
+        await updateDoc(bookRef, updatedFields);
+        
+        // Create new reading session
+        const sessionData = {
+            bookId: bookRef.id,
+            sessionTime: timeSpentReading,
+            sessionPages: currentPage - oldPagesRead + 1,
+            date: new Date().toISOString(),
+        }
+        const sessionsCollection = collection(db, 'sessions');
+        await addDoc(sessionsCollection, sessionData);
+
+        // Hide the modal
+        setShowModal(false);
+        window.location.reload();
+    };
           
     if (!book) {
         return <div>Loading...</div>;
@@ -199,37 +232,53 @@ const BookDetails = () => {
           </Col>
           ) : (
             <>
-                <h2>{book.title}</h2>
-                {coverImageUrl ? (
-                      <Image
-                        src={coverImageUrl}
-                        thumbnail  
-                        className='book-cover'
-                        alt="Cover" />
-                  ) : (
-                    <Image
-                      src="/default_book.png"
-                      thumbnail  
-                      className='book-cover'
-                      alt="Cover"/>
-                  )}
-                <p>Author: {book.author_fn} {book.author_ln}</p>
-                <p>Genre: {book.genre}</p>
-                <p>Pages: {book.pages}</p>
-                <p>Status: {book.status}</p>
-                <Button variant="primary" className='btn-space' onClick={handleEdit}>Edit</Button>
-                {book.status === 'Currently Reading' ? (
-                    <Button variant='primary' onClick={() => setShowModal(true)}>
-                    Continue Reading
-                    </Button>
-                ) : (
-                    <Button variant='primary' onClick={() => setShowModal(true)}>Start Reading</Button>
-                )}
+                <Row>
+                    <Col md={6}>
+                        {/* Left part of the page */}
+                        <h2>{book.title}</h2>
+                        {coverImageUrl ? (
+                        <Image
+                            src={coverImageUrl}
+                            thumbnail  
+                            className='book-cover'
+                            alt="Cover"
+                        />
+                        ) : (
+                        <Image
+                            src="/default_book.png"
+                            thumbnail  
+                            className='book-cover'
+                            alt="Cover"
+                        />
+                        )}
+                        <p>Author: {book.author_fn} {book.author_ln}</p>
+                        <p>Genre: {book.genre}</p>
+                        <p>Pages: {book.pages}</p>
+                        <p>Pages Read: {book.pagesRead}</p>
+                        <p>Status: {book.status}</p>
+                        <Button variant="primary" className='btn-space' onClick={handleEdit}>
+                        Edit
+                        </Button>
+                        {book.status === 'Currently Reading' ? (
+                        <Button variant='primary' onClick={handleSimpleRead}>
+                            Continue Reading
+                        </Button>
+                        ) : (book.status === 'Read' ? (
+                        <Button variant='primary' onClick={handleReread}>Read Again</Button>
+                        ) : (
+                        <Button variant='primary' onClick={handleSimpleRead}>Start Reading</Button>
+                        ))}
+                    </Col>
+                    <Col md={6}>
+                        <Sessions currentBookId = {bookId}/>
+                    </Col>
+                    </Row>
 
                 <ReadingModal
                     book={book}
                     showModal={showModal}
                     handleCloseModal={handleCloseModal}
+                    startPage={startPage}
                 />
             </>
           )}

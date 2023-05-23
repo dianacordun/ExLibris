@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Image, Button, Form} from 'react-bootstrap';
+import { Modal, Image, Button, Form, Row, Col } from 'react-bootstrap';
 import { formatTime } from '../../utils';  
 
 
-const ReadingModal = ({ book, showModal, handleCloseModal}) => {
+const ReadingModal = ({ book, showModal, handleCloseModal, startPage}) => {
     const [timer, setTimer] = useState(0);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const [finish, setFinish] = useState(false);
     const [timeSpentReading, setTimeSpentReading] = useState(0);
     const [isValid, setIsValid] = useState(true);
-    const [currentPage, setCurrentPage] = useState(0); //sa inceapa de la book.pagesread
+    const [currentPage, setCurrentPage] = useState(startPage); 
 
     useEffect(() => {
         let intervalId;
@@ -26,16 +26,14 @@ const ReadingModal = ({ book, showModal, handleCloseModal}) => {
       }, [showModal, isPaused]);
 
     
-    const handlePagesInput = (e) => {
+      const handlePagesInput = (e) => {
         const pages = e.target.value;
-
-        // Validate the number using a regular expression
         const isValidNumber = /^(0|[1-9][0-9]*)$/.test(pages);
-
+        const parsedPages = parseInt(pages, 10);
+      
         setCurrentPage(pages);
-        setIsValid(isValidNumber);
-        //TODO: sa nu fie mai mare decat nr de pagini sau mai mic decat pag de start
-    };
+        setIsValid(isValidNumber && parsedPages >= startPage && parsedPages <= book.pages);
+      };
 
     const handleModalClose = () => {
         if (showConfirmation) {
@@ -50,6 +48,8 @@ const ReadingModal = ({ book, showModal, handleCloseModal}) => {
     const handleConfirmation = (confirmed) => {
         if (confirmed) {
           setShowConfirmation(false);
+          setTimer(0);
+          setFinish(false);
           handleCloseModal();
         } else {
           setShowConfirmation(false);
@@ -81,21 +81,20 @@ const ReadingModal = ({ book, showModal, handleCloseModal}) => {
         setTimer(0);
 
 
-        handleCloseModal();
-
-        // TODO: Adaugat buton de "Finished Book"
-        // Updatat status-ul cartii daca e cazul
-        // Current page == books.pages sau pressed "finished book" => Read
-        // If "Not started" pressed start reading => status = "Currently Reading"
-        // book.pagesRead = currentPage
-        // book.timeRead = book.timeRead + timeSpentReading
-        // session.date = now
-        // session.sessionPages = book.pages - currentPage
-        // session.userId = book.userId
-        // session.bookId = book.id
-        // session.timeRead = timeSpentReading
+        handleCloseModal(timeSpentReading, currentPage);
     }
 
+    const handleFinishBook = () => {
+
+        console.log(timeSpentReading);
+        console.log(currentPage);
+
+        setFinish(false);
+        setIsPaused(false);
+        setTimer(0);
+
+        handleCloseModal(timeSpentReading, book.pages);
+    }
 
   return (
     <Modal show={showModal} onHide={handleModalClose}>
@@ -135,29 +134,46 @@ const ReadingModal = ({ book, showModal, handleCloseModal}) => {
                     Finish
                 </Button>
                 </>
-                ) : (
-                <Form onSubmit={handleSubmitReadingSession}>
-                <Form.Group controlId="pages" className='mb-4'>
-                    <Form.Label>At what page are you on?</Form.Label>
-                    <Form.Control
-                    type="number"
-                    className="mb-1"
-                    required
-                    placeholder=""
-                    value={currentPage}
-                    onChange={handlePagesInput}
-                    isInvalid={!isValid}
-                    />
-                    {!isValid && (
-                    <Form.Control.Feedback type="invalid">
-                        Please enter a valid number.
-                    </Form.Control.Feedback>
-                    )}
-                </Form.Group>
-                <Button variant="primary" type="submit">
-                    Finish Session
-                </Button>
-                </Form>
+                ) : (  
+                <Row>
+                <Col>
+                    <Form onSubmit={handleSubmitReadingSession}>
+                        <Form.Group controlId="pages" className='mb-4'>
+                            <Form.Label>At what page are you on?</Form.Label>
+                            <Form.Control
+                            type="number"
+                            className="mb-1"
+                            required
+                            placeholder=""
+                            value={currentPage}
+                            onChange={handlePagesInput}
+                            isInvalid={!isValid}
+                            />
+                            {!isValid && (
+                            <Form.Control.Feedback type="invalid">
+                                Please enter a valid number.
+                            </Form.Control.Feedback>
+                            )}
+                        </Form.Group>
+
+                        <Button variant="primary" className="mb-2" type="submit">
+                            Finish Session
+                        </Button>
+                        <Button variant="secondary" className = "mb-2" onClick={() => setFinish(false)}>
+                            Cancel
+                        </Button>
+                    
+                    </Form>
+                    </Col>
+                
+                <Col className="text-center">
+                    <p>OR</p>
+                    <Button className='btn btn-primary btn-space' onClick={handleFinishBook}>
+                        I've finished this book
+                    </Button>
+                </Col>
+                </Row>
+                
             )}
         </Modal.Footer>
       )}
