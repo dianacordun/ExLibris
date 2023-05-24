@@ -30,7 +30,7 @@ const Home = () => {
                 if (!pSnapshot.empty) {
                     // Set profile details
                     pSnapshot.forEach((doc) => {
-                        dispatch(setProfileDetails({firstName: doc.data().first_name, lastName: doc.data().last_name}));
+                        dispatch(setProfileDetails({firstName: doc.data().first_name, lastName: doc.data().last_name, totalTimeReading: doc.data().totalTimeReading, totalPagesRead: doc.data().totalPagesRead}));
                       });
                     // Add to state & local storage
                     dispatch(setExistingProfile(true));

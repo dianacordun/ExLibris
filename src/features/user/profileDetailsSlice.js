@@ -4,6 +4,8 @@ const initialState = {
     value: {
       firstName: '',
       lastName: '',
+      totalTimeReading: 0,
+      totalPagesRead: 0,
     },
   };
 

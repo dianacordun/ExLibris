@@ -34,7 +34,7 @@ const CreateProfile = ({ userId }) => {
 
     try {
         const profileCollection = collection(db, 'profile');
-        const newProfileDocRef = await addDoc(profileCollection, { userId, first_name, last_name });
+        const newProfileDocRef = await addDoc(profileCollection, { userId, first_name, last_name, totalTimeReading: 0, totalPagesRead: 0 });
         
         if (profile_pic) {
           const storageRef = ref(storage, `profile_pictures/${newProfileDocRef.id}`);
@@ -49,7 +49,7 @@ const CreateProfile = ({ userId }) => {
 
         dispatch(setExistingProfile(true));
         localStorage.setItem('profileExists', 'true');
-        dispatch(setProfileDetails({firstName: first_name, lastName: last_name}));
+        dispatch(setProfileDetails({firstName: first_name, lastName: last_name, totalTimeReading: 0, totalPagesRead: 0}));
         navigate('/');
 
     } catch (error) {

@@ -21,6 +21,8 @@ const fetchProfileData = async (userId) => {
             // Access the fields in the profile document
             const firstName = profileData.first_name;
             const lastName = profileData.last_name;
+            const totalTimeReading = profileData.totalTimeReading;
+            const totalPagesRead = profileData.totalPagesRead;
 
             // Picture might be null
             const storageRef = ref(storage, `profile_pictures/${profileDoc.id}`);
@@ -36,7 +38,7 @@ const fetchProfileData = async (userId) => {
             }
 
             // Do something with the retrieved profile data
-            return [ picture, firstName, lastName ];
+            return [ picture, firstName, lastName, totalTimeReading, totalPagesRead];
         } 
     } catch (error) {
         console.log('Error fetching profile data:', error);
@@ -48,6 +50,8 @@ const Profile = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [picture, setPicture] = useState('');
+  const [totalTimeReading, setTotalTimeReading] = useState(0);
+  const [totalPagesRead, setTotalPagesRead] = useState(0);
   const user = useSelector((state) => state.user.value);
   const userId = user?.id;
 
@@ -63,18 +67,21 @@ const Profile = () => {
         // Fetch information about existing profile
         const profileData = await fetchProfileData(userId);
         if (profileData) {
-          const [pictureFetched, firstNameFetched, lastNameFetched] = profileData;
+          const [pictureFetched, firstNameFetched, lastNameFetched, timeFetched, pagesFetched] = profileData;
           setPicture(pictureFetched);
           setFirstName(firstNameFetched);
           setLastName(lastNameFetched);
-          dispatch(setProfileDetails({firstName: firstName, lastName: lastName}));
+          setTotalTimeReading(timeFetched);
+          setTotalPagesRead(pagesFetched);
+
+          dispatch(setProfileDetails({firstName: firstName, lastName: lastName, totalTimeReading: totalTimeReading, totalPagesRead: totalPagesRead}));
         }
       }
       setLoading(false);
     };
 
     fetchData();
-  }, [existingProfile, userId, dispatch, firstName, lastName]);
+  }, [existingProfile, userId, dispatch, firstName, lastName, totalPagesRead, totalTimeReading]);
 
   if (loading) {
     return <div>Loading...</div>;

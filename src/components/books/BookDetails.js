@@ -8,6 +8,7 @@ import Layout from '../Layout';
 import generateSearchKeywords from '../../utils';
 import ReadingModal from '../popups/ReadingModal';
 import Sessions from './Sessions';
+import { useSelector } from 'react-redux';
 
 const BookDetails = () => {
     const { bookId } = useParams();
@@ -25,6 +26,9 @@ const BookDetails = () => {
     const [deleteImage, setDeleteImage] = useState(false);
     const [startPage, setStartPage] = useState(0);
     const [isValid, setIsValid] = useState(true);
+
+    const user = useSelector((state) => state.user.value);
+    const userId = user?.id; 
 
     // Start reading logic 
     const [showModal, setShowModal] = useState(false);
@@ -145,35 +149,56 @@ const BookDetails = () => {
     }  
 
     const handleCloseModal = async (timeSpentReading, currentPage) => {
-        if (!timeSpentReading && !currentPage){
+        
+        try{
+            if (!timeSpentReading && !currentPage){
             setShowModal(false);
             return;
-        }
-        // Updating book data
-        const bookRef = doc(db, 'book', bookId);
-        const oldPagesRead = book.pagesRead;
-        
-        const newStatus = (currentPage === book.pages) ? 'Read' : 'Currently Reading';
-        const updatedFields = {
-            pagesRead: currentPage,
-            status: newStatus,
-            timeRead: book.timeRead + timeSpentReading,
-        }
-        await updateDoc(bookRef, updatedFields);
-        
-        // Create new reading session
-        const sessionData = {
-            bookId: bookRef.id,
-            sessionTime: timeSpentReading,
-            sessionPages: currentPage - oldPagesRead + 1,
-            date: new Date().toISOString(),
-        }
-        const sessionsCollection = collection(db, 'sessions');
-        await addDoc(sessionsCollection, sessionData);
+            }
+            // Updating book data
+            const bookRef = doc(db, 'book', bookId);
+            const oldPagesRead = book.pagesRead;
+            
+            const newStatus = (currentPage === book.pages) ? 'Read' : 'Currently Reading';
+            const updatedFields = {
+                pagesRead: currentPage,
+                status: newStatus,
+                timeRead: book.timeRead + timeSpentReading,
+            }
+            await updateDoc(bookRef, updatedFields);
+            
+            // Create new reading session
+            const sessionData = {
+                bookId: bookRef.id,
+                sessionTime: timeSpentReading,
+                sessionPages: currentPage - oldPagesRead,
+                date: new Date().toISOString(),
+            }
+            const sessionsCollection = collection(db, 'sessions');
+            await addDoc(sessionsCollection, sessionData);
 
-        // Hide the modal
-        setShowModal(false);
-        window.location.reload();
+            // Updating profile reading data
+            const profileQuery = query(collection(db, 'profile'), where('userId', '==', userId));
+            const profileSnapshot = await getDocs(profileQuery);
+
+            if (!profileSnapshot.empty) {
+                const profileDoc = profileSnapshot.docs[0];
+                const profileRef = doc(db, 'profile', profileDoc.id);
+                
+                // Update the profile document in the profile collection
+                await updateDoc(profileRef, {
+                    totalTimeReading: profileDoc.data().totalTimeReading + timeSpentReading, 
+                    totalPagesRead: profileDoc.data().totalPagesRead + (currentPage - oldPagesRead)
+                });
+            }
+
+
+            // Hide the modal
+            setShowModal(false);
+            window.location.reload();
+        }catch(error){
+            console.error("Failed to update session data.");
+        }
     };
 
     const handlePagesReadInput = (e) => {
@@ -305,11 +330,11 @@ const BookDetails = () => {
             <div className="d-flex justify-content-between">
                 <Button variant="danger" onClick={() => setShowConfirmationModal(true)}>Delete Book</Button>
                 <div>
-                <Button variant="secondary" onClick={handleCancelEdit} className="btn-space mr-2">
-                    Cancel
-                </Button>
                 <Button variant="primary" type="submit" className='btn-space'>
                     Update
+                </Button>
+                <Button variant="secondary" onClick={handleCancelEdit} className="btn-space mr-2">
+                    Cancel
                 </Button>
                 </div>
             </div>

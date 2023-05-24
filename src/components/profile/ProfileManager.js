@@ -19,6 +19,8 @@ const ProfileManager = ({ picture }) => {
     const dispatch = useDispatch();
     const firstName = useSelector(state => state.profileDetails.value.firstName);
     const lastName = useSelector(state => state.profileDetails.value.lastName);
+    const totalPagesRead = useSelector(state => state.profileDetails.value.totalPagesRead);
+    const totalTimeReading = useSelector(state => state.profileDetails.value.totalTimeReading);
     const user = useSelector((state) => state.user.value);
     // eslint-disable-next-line
     const userId = user?.id; 
@@ -66,7 +68,7 @@ const ProfileManager = ({ picture }) => {
           await uploadBytes(storageRef, profilePicFile);
         }
 
-        dispatch(setProfileDetails({firstName: firstName, lastName: lastName}));
+        dispatch(setProfileDetails({firstName: firstName, lastName: lastName, totalPagesRead: totalPagesRead, totalTimeReading:totalTimeReading}));
   
         console.log('Profile updated successfully');
       } else {
@@ -191,7 +193,7 @@ const ProfileManager = ({ picture }) => {
           console.log('No books found');
         }
     
-        dispatch(setProfileDetails({ firstName: '', lastName: '' }));
+        dispatch(setProfileDetails(null));
         // Set user state to null and delete from local storage
         dispatch(setUser(null));
         dispatch(setExistingProfile(null));
@@ -224,6 +226,8 @@ const ProfileManager = ({ picture }) => {
           firstName={firstName}
           lastName={lastName}
           imageSize={imageSize}
+          totalPagesRead={totalPagesRead}
+          totalTimeReading={totalTimeReading}
         />
       )}
       {!isEditing && <Button onClick={handleEditClick}>Edit</Button>}
