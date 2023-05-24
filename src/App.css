@@ -28,3 +28,7 @@
 .book-cover-modal{
     height: 150px; 
 }
+
+.smaller-input {
+    width: 100px;
+}

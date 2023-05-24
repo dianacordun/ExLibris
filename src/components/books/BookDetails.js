@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Form, Button, Col, Image, Row } from 'react-bootstrap';
-import { collection, addDoc, doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { Form, Button, Col, Image, Row, Modal } from 'react-bootstrap';
+import { collection, query, where, getDocs, addDoc, doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db, storage } from '../../firebase';
 import { ref, deleteObject, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Layout from '../Layout';
@@ -19,14 +19,16 @@ const BookDetails = () => {
     const [title, setTitle] = useState('');
     const [authorFn, setAuthorFn] = useState('');
     const [authorLn, setAuthorLn] = useState('');
+    const [pagesRead, setPagesRead] = useState(0);
     const [coverImage, setCoverImage] = useState(null);
     const [coverImageUrl, setCoverImageUrl] = useState('');
     const [deleteImage, setDeleteImage] = useState(false);
-    const [ startPage, setStartPage ] = useState(0);
-
+    const [startPage, setStartPage] = useState(0);
+    const [isValid, setIsValid] = useState(true);
 
     // Start reading logic 
     const [showModal, setShowModal] = useState(false);
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
     useEffect(() => {
         const fetchBookDetails = async () => {
@@ -39,6 +41,7 @@ const BookDetails = () => {
                    setTitle(bookData.title);
                    setAuthorFn(bookData.author_fn);
                    setAuthorLn(bookData.author_ln);
+                   setPagesRead(bookData.pagesRead);
                    setCoverImageUrl(bookData.coverUrl);
                 } else {
                   console.log("Book was not found.");
@@ -61,6 +64,7 @@ const BookDetails = () => {
         setTitle(book.title);
         setAuthorFn(book.author_fn);
         setAuthorLn(book.author_ln);
+        setPagesRead(book.pagesRead);
       };
       const handleImageClick = () => {
         fileInputRef.current.click();
@@ -82,6 +86,7 @@ const BookDetails = () => {
             title,
             author_fn: authorFn,
             author_ln: authorLn,
+            pagesRead: pagesRead,
             searchKeywords: generateSearchKeywords(title, authorFn, authorLn),
             coverUrl: coverImageUrl,
             };
@@ -108,6 +113,7 @@ const BookDetails = () => {
             setTitle('');
             setAuthorFn('');
             setAuthorLn('');
+            setPagesRead(0);
             setDeleteImage(false);
             setEditMode(false);
             console.log('Book updated successfully');
@@ -169,6 +175,62 @@ const BookDetails = () => {
         setShowModal(false);
         window.location.reload();
     };
+
+    const handlePagesReadInput = (e) => {
+        const pages = e.target.value;
+    
+        // Validate the number using a regular expression
+        const isValidNumber = /^(0|[1-9][0-9]*)$/.test(pages);
+    
+        setPagesRead(pages);
+        setIsValid(isValidNumber && parseInt(pages, 10) <= book.pages);
+      };
+
+    const handleDeleteBook = async () => {
+        try {
+            const bookRef = doc(db, 'book', bookId);
+            const coverImageRef = ref(storage, `book_covers/${bookId}`);
+            
+            await deleteDoc(bookRef);
+            
+            // Delete the cover image if it exists
+            const coverImageUrl = book.coverUrl;
+            if (coverImageUrl) {
+              await deleteObject(coverImageRef);
+            }
+
+            // Delete all sessions associated with this book
+            const sessionsQuery = query(collection(db, 'sessions'), where('bookId', '==', bookId));
+            const sessionsSnapshot = await getDocs(sessionsQuery);
+
+            if (!sessionsSnapshot.empty) {
+                const storageTasks = [];
+            
+                sessionsSnapshot.forEach((sessionDoc) => {
+                    const sessionRef = doc(db, 'sessions', sessionDoc.id);
+                    const deleteSession = deleteDoc(sessionRef);
+                    storageTasks.push(deleteSession);
+                });
+        
+                // Wait for all storage tasks to complete
+                await Promise.all(storageTasks);
+        
+                console.log('Sessions deleted successfully');
+            } else {
+                console.log('No sessions found');
+            }
+
+
+        }catch(error){
+            console.error("Failed to delete book: " + error);
+        }
+
+
+        // Close the modal after deleting the book
+        setShowConfirmationModal(false);
+        navigate('/');
+    };  
+
           
     if (!book) {
         return <div>Loading...</div>;
@@ -222,12 +284,49 @@ const BookDetails = () => {
               <Form.Label>Author Last Name</Form.Label>
               <Form.Control type="text" value={authorLn} onChange={(e) => setAuthorLn(e.target.value)} />
             </Form.Group>
-            <Button variant="primary" type="submit" className='btn-space'>
-              Update
-            </Button>
-            <Button variant="secondary" onClick={handleCancelEdit} className="mr-2">
-              Cancel
-            </Button>
+            <Form.Group as={Col} className="mb-3" controlId="pagesRead">
+                <Form.Label>Number of pages read</Form.Label>
+                <div className="d-flex align-items-center">
+                    <Form.Control
+                    type="text"
+                    value={pagesRead}
+                    className="smaller-input"
+                    onChange={handlePagesReadInput}
+                    isInvalid={!isValid}
+                    />
+                    <span className="ml-2">/ {book.pages}</span>
+                </div>
+                {!isValid && (
+                <Form.Control.Feedback type="invalid">
+                    Please enter a valid number.
+                </Form.Control.Feedback>
+                )}
+            </Form.Group>
+            <div className="d-flex justify-content-between">
+                <Button variant="danger" onClick={() => setShowConfirmationModal(true)}>Delete Book</Button>
+                <div>
+                <Button variant="secondary" onClick={handleCancelEdit} className="btn-space mr-2">
+                    Cancel
+                </Button>
+                <Button variant="primary" type="submit" className='btn-space'>
+                    Update
+                </Button>
+                </div>
+            </div>
+            <Modal show={showConfirmationModal} onHide={() => setShowConfirmationModal(false)} centered>
+                <Modal.Header closeButton>
+                <Modal.Title>Are you sure?</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>This action is not reversible and all the data regarding the book will be lost.</Modal.Body>
+                <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowConfirmationModal(false)}>
+                    No
+                </Button>
+                <Button variant="danger" onClick={handleDeleteBook}>
+                    Yes
+                </Button>
+                </Modal.Footer>
+            </Modal>
           </Form>
           </Col>
           ) : (
@@ -266,7 +365,7 @@ const BookDetails = () => {
                         ) : (book.status === 'Read' ? (
                         <Button variant='primary' onClick={handleReread}>Read Again</Button>
                         ) : (
-                        <Button variant='primary' onClick={handleSimpleRead}>Start Reading</Button>
+                        <Button variant='primary' onClick={(handleSimpleRead)}>Start Reading</Button>
                         ))}
                     </Col>
                     <Col md={6}>

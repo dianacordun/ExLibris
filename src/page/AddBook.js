@@ -15,7 +15,7 @@ const AddBook = () => {
     const [author_ln, setAuthorLn] = useState('');
     const [cover, setCover] = useState('');
     const [pages, setPages] = useState(0);
-    const [genre, setGenre] = useState('');
+    const [genre, setGenre] = useState('Action and Adventure');
     const [status, setStatus] = useState('Not Started');
     const [error, setError] = useState('');
     const [isValid, setIsValid] = useState(true);

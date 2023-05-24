@@ -6,14 +6,14 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import { setExistingProfile } from '../features/user/profileSlice';
 import Dashboard from "../components/books/Dashboard";
+import { setProfileDetails } from "../features/user/profileDetailsSlice";
 
 
 const checkProfileExists = async (userId) => {
  
     const profileQuery = query(collection(db, 'profile'), where('userId', '==', userId));
     const profileSnapshot = await getDocs(profileQuery);
-    
-    return !profileSnapshot.empty;
+    return profileSnapshot;
 };
 
 const Home = () => {
@@ -26,17 +26,22 @@ const Home = () => {
     useEffect(() => {
         if(isSignedIn){
             const checkIfExists = async () => {
-                const exists = await checkProfileExists(userId);
-                if (exists){
+                const pSnapshot = await checkProfileExists(userId);
+                if (!pSnapshot.empty) {
+                    // Set profile details
+                    pSnapshot.forEach((doc) => {
+                        dispatch(setProfileDetails({firstName: doc.data().first_name, lastName: doc.data().last_name}));
+                      });
                     // Add to state & local storage
                     dispatch(setExistingProfile(true));
-                    localStorage.setItem('profileExists', 'true');
-                    };
+                    localStorage.setItem('profileExists', 'true');  
+                    }
                 }
             
-                checkIfExists();
+            checkIfExists();
         }else{
             dispatch(setExistingProfile(false));
+            dispatch(setProfileDetails(null));
             localStorage.removeItem('profileExists');
         }
       }, [userId, dispatch, isSignedIn]);

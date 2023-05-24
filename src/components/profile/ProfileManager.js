@@ -152,7 +152,7 @@ const ProfileManager = ({ picture }) => {
           // Delete each book document and its cover image
           const storageTasks = [];
     
-          booksSnapshot.forEach((bookDoc) => {
+          for (const bookDoc of booksSnapshot.docs) {
             const bookRef = doc(db, 'book', bookDoc.id);
             const coverImageRef = ref(storage, `book_covers/${bookDoc.id}`);
     
@@ -166,7 +166,22 @@ const ProfileManager = ({ picture }) => {
               storageTasks.push(deleteCoverImage);
             }
 
-        });
+            // For each book, delete its sessions
+            const sessionsQuery = query(collection(db, 'sessions'), where('bookId', '==', bookDoc.id));
+            const sessionsSnapshot = await getDocs(sessionsQuery);
+
+            if (!sessionsSnapshot.empty) {
+                sessionsSnapshot.forEach((sessionDoc) => {
+                    const sessionRef = doc(db, 'sessions', sessionDoc.id);
+                    const deleteSession = deleteDoc(sessionRef);
+                    storageTasks.push(deleteSession);
+                });
+
+                console.log('Sessions deleted successfully');
+            } else {
+                  console.log('No sessions found');
+            }    
+        };
     
           // Wait for all storage tasks to complete
           await Promise.all(storageTasks);

@@ -6,6 +6,7 @@ import { db, storage } from '../../firebase';
 import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes } from 'firebase/storage';
 import { setExistingProfile } from '../../features/user/profileSlice';
+import { setProfileDetails } from '../../features/user/profileDetailsSlice';
 import { useDispatch } from 'react-redux';
 import '../Forms.css';
 
@@ -48,6 +49,7 @@ const CreateProfile = ({ userId }) => {
 
         dispatch(setExistingProfile(true));
         localStorage.setItem('profileExists', 'true');
+        dispatch(setProfileDetails({firstName: first_name, lastName: last_name}));
         navigate('/');
 
     } catch (error) {

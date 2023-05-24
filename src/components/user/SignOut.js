@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { setUser } from '../../features/user/userSlice';
 import { useDispatch } from 'react-redux';
 import { setExistingProfile } from '../../features/user/profileSlice';
+import { setProfileDetails } from '../../features/user/profileDetailsSlice';
 
 
 const SignOut = () => {
@@ -19,6 +20,7 @@ const SignOut = () => {
             
             // Set user state to null and delete from local storage
             dispatch(setUser(null));
+            dispatch(setProfileDetails(null));
             dispatch(setExistingProfile(null));
             localStorage.removeItem('user');
             localStorage.removeItem('profileExists');
@@ -30,6 +32,7 @@ const SignOut = () => {
             console.log(errorCode, errorMessage)
         });
         navigate("/");
+        window.location.reload();
         
       }, [dispatch, navigate]); // Empty dependency array ensures the effect runs only once on component mount
     
