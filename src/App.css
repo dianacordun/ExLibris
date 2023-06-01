@@ -32,3 +32,9 @@
 .smaller-input {
     width: 100px;
 }
+
+.text-muted {
+    color: #6c757d;
+    margin: '0';
+    padding: 0%;
+}

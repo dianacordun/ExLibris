@@ -2,6 +2,7 @@ const genreOptions = [
     'Action and Adventure',
     'Biography',
     'Children',
+    'Classics',
     'Comics and Graphic Novels',
     'Fantasy',
     'Historical Fiction',

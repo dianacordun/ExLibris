@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase'; 
-import { ListGroup } from 'react-bootstrap';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
+import { Container, ListGroup } from 'react-bootstrap';
+import { Line } from 'react-chartjs-2';
+import 'chart.js/auto';
 
 const Sessions = ({ currentBookId }) => {
   const [sessions, setSessions] = useState([]);
+  const [currentBook, setCurrentBook] = useState();
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -26,9 +30,66 @@ const Sessions = ({ currentBookId }) => {
           console.error('Error fetching sessions:', error);
         }
     };
+
+    const fetchBook = async () => {
+      try {
+        const bookRef = doc(db, 'book', currentBookId);
+        const bookSnapshot = await getDoc(bookRef);
+        if (bookSnapshot.exists()) {
+          const bookData = bookSnapshot.data();
+          setCurrentBook(bookData);
+        } else {
+          console.log('Book not found');
+        }
+      } catch (error) {
+        console.error('Error fetching book details:', error);
+      }
+    };
   
     fetchSessions();
+    fetchBook();
+
   }, [currentBookId]);
+
+  const generateChartData = () => {
+    return sessions.map((session) => {
+      return Number(session.sessionPages) / Number(session.sessionTime);
+    });
+  };
+
+  const sortedChartData = generateChartData().sort((a, b) => a - b);
+
+  const data = {
+    datasets: [
+      {
+        label: 'Pages read per minute',
+        data: sortedChartData,
+        borderColor: 'purple',
+        pointBorderColor: 'black',
+        tension: 0.4
+      }
+    ]
+  };
+
+  const options = {
+    scales: {
+      x: {
+        type: 'category',
+        labels: sortedChartData.map((_, index) => index + 1),
+      },
+      y: {
+        type: 'linear',
+        position: 'left',
+        labels: sortedChartData,
+        ticks: {
+        stepSize: 1,
+        callback: function (value) {
+          return value.toFixed(2);
+        }
+      },
+      }
+    },
+  };
 
 
   const formatDate = (dateString) => {
@@ -39,14 +100,29 @@ const Sessions = ({ currentBookId }) => {
   return (
     <div>
       <h3>Reading History</h3>
-      <div style={{ maxHeight: '540px', overflowY: 'scroll' }}>
-        <ListGroup>
+      {sessions.length > 0 ? (
+          <Line data={data} options={options}/>
+        ) : (
+          <p>No data to show</p>
+        )}
+     <div style={{ maxHeight: '280px', paddingTop: '20px', paddingLeft: "40px", display: 'flex' }}>
+      <Container>
+          <div style={{ paddingLeft: '30px', paddingTop:'30px'}}>
+            <h2 style={{ color: 'purple', marginBottom: '5px' }}>{(currentBook.pagesRead / currentBook.timeRead).toFixed(1)}</h2>
+            <p className="text-muted">pages per minute </p>
+            <p style={{ margin: '0'}}>You'll finish this book</p>
+            <p style={{ margin: '0', padding:'0'}}>in aproximately</p>
+            <i class="bi bi-clock"> {((currentBook.pages - currentBook.pagesRead) / ((currentBook.pagesRead / currentBook.timeRead).toFixed(1))).toFixed(0)} minutes</i>
+          </div>
+        </Container>
+        
+        <ListGroup style={{ width: '70%', overflowY: 'scroll' }}>
           {sessions.length > 0 ? (
             sessions.map((session) => (
               <ListGroup.Item key={session.id}>
                 <p>Date: {formatDate(session.date)}</p>
-                <p>Duration: {session.sessionTime} minutes</p>
-                <p>Pages: {session.sessionPages} pages</p>
+                <p>Duration: {session.sessionTime === 1 ? `${session.sessionTime} minute` : `${session.sessionTime} minutes`}</p>
+                <p>Pages: {session.sessionPages === 1 ? `${session.sessionPages} page` : `${session.sessionPages} pages`}</p>
               </ListGroup.Item>
             ))
           ) : (
