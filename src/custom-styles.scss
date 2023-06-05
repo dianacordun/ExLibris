@@ -1,0 +1,23 @@
+$primary: #8319caf9;
+$secondary: #a492e3;
+
+@import '~bootstrap/scss/bootstrap';
+
+.book-cover {
+    width: 150px; 
+    height: auto; 
+}
+
+.form-title {
+    color: $indigo-800;
+}
+ 
+.custom-input-border .form-control {
+    border-color: $indigo-200;
+}
+
+.custom-navbar {
+    background-color: #a392e376;
+}
+
+

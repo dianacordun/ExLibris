@@ -3,12 +3,14 @@
 }
   
 .card-image {
-    object-fit: cover;
-    height: 300px; 
+    object-fit: contain;
+    object-position: center center;
+    height: 300px;
+    width: 100%;
 }
 
 .card:hover {
-    box-shadow: 0 8px 16px rgba(137, 24, 104, 0.696);
+    box-shadow: 0 8px 16px #a492e3;
   }
 
 .card-link {
@@ -37,4 +39,9 @@
     color: #6c757d;
     margin: '0';
     padding: 0%;
+}
+
+.bg-custom-pg-bar {
+    background-color: #8319caf9!important;
+    
 }

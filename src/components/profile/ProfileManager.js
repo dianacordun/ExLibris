@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Button, Container } from 'react-bootstrap';
 import EditProfile  from './EditProfile';
 import ViewProfile from './ViewProfile';
 import ErrorPopup from '../popups/ErrorPopup';
@@ -12,6 +12,7 @@ import { deleteUser, EmailAuthProvider, reauthenticateWithCredential, reauthenti
 import { useNavigate } from 'react-router-dom';
 import { setExistingProfile } from '../../features/user/profileSlice';
 import { setUser } from '../../features/user/userSlice';
+import { Pie } from 'react-chartjs-2';
 
 const ProfileManager = ({ picture }) => {
     
@@ -33,6 +34,50 @@ const ProfileManager = ({ picture }) => {
       height: '200px', 
       objectFit: 'cover', 
     };  
+    const [bookData, setBookData] = useState([]);
+    
+    useEffect(() => {
+      // Fetch books data for the user from Firebase
+      const fetchBooks = async () => {
+        try {
+          const books = await getBooksByUserId(userId);
+          const data = generateBookData(books);
+          setBookData(data);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+  
+      fetchBooks();
+    }, [userId]);
+
+    const generateBookData = (books) => {
+      // Iterate through the books and count the number of books with each status
+      const statusCount = books.reduce((count, book) => {
+        const status = book.status;
+        count[status] = (count[status] || 0) + 1;
+        return count;
+      }, {});
+  
+      // Convert the status count object into an array for the chart data
+      const data = Object.keys(statusCount).map((status) => {
+        return {
+          label: status,
+          data: statusCount[status],
+        };
+      });
+  
+      return data;
+    };
+    
+    const getBooksByUserId = async (userId) => {
+      const booksRef = collection(db, 'book');
+      const booksQuery = query(booksRef, where('userId', '==', userId));
+    
+      const snapshot = await getDocs(booksQuery);
+      const books = snapshot.docs.map((doc) => doc.data());
+      return books;
+    };
 
     const promptUserForCredentials = () => {
       const email = window.prompt('Please enter your email');
@@ -209,6 +254,20 @@ const ProfileManager = ({ picture }) => {
       }
     };
 
+    const data = {
+      labels: ['Read', 'Currently Reading', 'Not Read'],
+      datasets: [
+        {
+          data: bookData.map((dataPoint) => dataPoint.data),
+          backgroundColor: ['rgba(59, 93, 248, 0.57)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(155, 0, 237, 0.57)',
+                           ],
+        },
+      ],
+    };
+    
+
     return (
         <>
       {isEditing ? (
@@ -221,14 +280,26 @@ const ProfileManager = ({ picture }) => {
           imageSize={imageSize}
         />
       ) : (
-        <ViewProfile
-          picture={picture}
-          firstName={firstName}
-          lastName={lastName}
-          imageSize={imageSize}
-          totalPagesRead={totalPagesRead}
-          totalTimeReading={totalTimeReading}
-        />
+        <Container>
+        <div className="row">
+          <div className="col-md-6">
+            <ViewProfile
+              picture={picture}
+              firstName={firstName}
+              lastName={lastName}
+              imageSize={imageSize}
+              totalPagesRead={totalPagesRead}
+              totalTimeReading={totalTimeReading}
+            />
+          </div>
+          <div className="col-md-6 ">
+              <div style={{ width: '80%', height: '80%' }}>
+               <Pie data={data} />
+              </div>
+          </div>
+        </div>
+      </Container>
+        
       )}
       {!isEditing && <Button onClick={handleEditClick}>Edit</Button>}
       <ErrorPopup

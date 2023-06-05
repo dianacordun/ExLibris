@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col, Card, Form, InputGroup, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, InputGroup, Button, ProgressBar } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
@@ -50,6 +50,7 @@ const Dashboard = ({ userId }) => {
                     id: doc.id,
                     title: data.title,
                     coverUrl: data.coverUrl,
+                    percent: Math.round((data.pagesRead / data.pages) * 100),
                 };
             });
 
@@ -140,11 +141,12 @@ const Dashboard = ({ userId }) => {
                         <Card className="card">
                             {book.coverUrl ? (
                                 <Card.Img variant="top" src={book.coverUrl} alt={book.title} className="card-image"/>
-                            ) : (
-                                <Card.Img variant="top" src="/default_book.png" alt={book.title} className="card-image" />
-                            )}
-                        <Card.Body>
-                            <Card.Title>{book.title}</Card.Title>
+                                ) : (
+                                    <Card.Img variant="top" src="/default_book.png" alt={book.title} className="card-image" />
+                                    )}
+                            <ProgressBar style={{ height: '5px', borderRadius: '0' }} variant="custom-pg-bar" now={book.percent} />
+                        <Card.Body>                            
+                            <Card.Title className='form-title'>{book.title}</Card.Title>
                         </Card.Body>
                         </Card>
                         </Link>

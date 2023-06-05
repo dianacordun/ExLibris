@@ -8,7 +8,7 @@ import 'chart.js/auto';
 
 const Sessions = ({ currentBookId }) => {
   const [sessions, setSessions] = useState([]);
-  const [currentBook, setCurrentBook] = useState();
+  const [currentBook, setCurrentBook] = useState({ pagesRead: 0 });
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -37,7 +37,11 @@ const Sessions = ({ currentBookId }) => {
         const bookSnapshot = await getDoc(bookRef);
         if (bookSnapshot.exists()) {
           const bookData = bookSnapshot.data();
-          setCurrentBook(bookData);
+          setCurrentBook({
+            ...bookData,
+            pages: parseInt(bookData.pages),
+            pagesRead: parseInt(bookData.pagesRead)
+          });
         } else {
           console.log('Book not found');
         }
@@ -58,6 +62,10 @@ const Sessions = ({ currentBookId }) => {
   };
 
   const sortedChartData = generateChartData().sort((a, b) => a - b);
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
   const data = {
     datasets: [
@@ -70,42 +78,36 @@ const Sessions = ({ currentBookId }) => {
       }
     ]
   };
-
+  
   const options = {
-    scales: {
-      x: {
-        type: 'category',
-        labels: sortedChartData.map((_, index) => index + 1),
-      },
-      y: {
-        type: 'linear',
-        position: 'left',
-        labels: sortedChartData,
-        ticks: {
+  scales: {
+    x: {
+      type: 'category',
+      labels: sortedChartData.map((_, index) => index + 1),
+    },
+    y: {
+      type: 'linear',
+      position: 'left',
+      labels: sortedChartData,
+      ticks: {
         stepSize: 1,
         callback: function (value) {
           return value.toFixed(2);
-        }
+        },
       },
-      }
     },
-  };
+  },
+};
 
 
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
 
   return (
     <div>
       <h3>Reading History</h3>
       {sessions.length > 0 ? (
+        <>
           <Line data={data} options={options}/>
-        ) : (
-          <p>No data to show</p>
-        )}
-     <div style={{ maxHeight: '280px', paddingTop: '20px', paddingLeft: "40px", display: 'flex' }}>
+          <div style={{ maxHeight: '280px', paddingTop: '20px', paddingLeft: "40px", display: 'flex' }}>
       <Container>
           <div style={{ paddingLeft: '30px', paddingTop:'30px'}}>
             <h2 style={{ color: 'purple', marginBottom: '5px' }}>{(currentBook.pagesRead / currentBook.timeRead).toFixed(1)}</h2>
@@ -129,7 +131,11 @@ const Sessions = ({ currentBookId }) => {
             <ListGroup.Item>No history</ListGroup.Item>
           )}
         </ListGroup>
-      </div>
+           </div>
+        </>
+      ) : (
+        <p>No data to show</p>
+      )}
     </div>
   );
 };

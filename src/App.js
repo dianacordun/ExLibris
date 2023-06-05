@@ -11,6 +11,8 @@ import Profile from './page/Profile';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from './components/NotFound';
 import './App.css';
+import './custom-styles.scss';
+
 
 function App() {
  
@@ -32,7 +34,7 @@ function App() {
                <Route exact path="/books/:bookId" element={<ProtectedRoute private={true} component={BookDetails} />}/>
 
                {/* 404 */}
-               <Route path="*" element={<NotFound />} />
+               <Route path="*" element={<ProtectedRoute private={true} component={NotFound} />}/>
             </Routes>                    
         </section>
       </div>

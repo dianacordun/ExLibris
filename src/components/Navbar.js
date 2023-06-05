@@ -1,13 +1,12 @@
 import { Link, NavLink } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
-import { Image } from 'react-bootstrap';
 
 const NavBar = () => {
 
     return (
-      <Navbar bg="light" expand="sm">
+      <Navbar expand="sm" className='custom-navbar'>
         <Link className="navbar-brand" to="/">
-          <Image className="navbar-brand" src="logo_app.png" alt="ExLibris" style={{paddingLeft:'10px', width: '100px', height: '100px', objectFit: 'scale-down' }}/>
+          <img className="navbar-brand" src="logo_app.png" alt="ExLibris" style={{paddingLeft:'10px', width: '90px', height: '70px', objectFit: 'scale-down' }}/>
         </Link>
         <Navbar.Toggle aria-controls="navbarNav" />
 

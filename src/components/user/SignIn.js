@@ -96,8 +96,8 @@ const SignIn = () => {
         </Col>
         <Col className="d-flex justify-content-center align-items-center">
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
-            <h2 className="text-center mb-4">Sign In</h2>
-                <Form.Group className="mb-3" controlId="formBasicEmail">
+            <h2 className="text-center mb-4 form-title">Sign In</h2>
+                <Form.Group className="mb-3 custom-input-border" controlId="formBasicEmail">
                     <Form.Label>Email address</Form.Label>
                     <Form.Control type="email" placeholder="Enter email" onChange={(e)=>setEmail(e.target.value)} required 
                     isInvalid={validated && !email} />
@@ -109,7 +109,7 @@ const SignIn = () => {
                     </Form.Text>
                 </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formBasicPassword">
+                <Form.Group className="mb-3 custom-input-border" controlId="formBasicPassword">
                     <Form.Label>Password</Form.Label>
                     <div className="input-group">
                         <Form.Control type={showPassword ? "text" : "password"} placeholder="Password" onChange={(e)=>setPassword(e.target.value)} required isInvalid={validated && !password} />
@@ -130,7 +130,7 @@ const SignIn = () => {
                 
                 <Container className="d-flex flex-column align-items-center">
                     <Button variant="primary" type="submit">Sign In</Button>
-                    <p className="text-muted">
+                    <p className="text-muted" style={{paddingTop: '10px'}}>
                         OR
                     </p>
                     <Button variant="primary" className="mb-2" onClick={handleGoogleSignIn}>Sign in with Google</Button>
