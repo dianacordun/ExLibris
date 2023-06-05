@@ -57,7 +57,12 @@ const Sessions = ({ currentBookId }) => {
 
   const generateChartData = () => {
     return sessions.map((session) => {
-      return Number(session.sessionPages) / Number(session.sessionTime);
+      const sessionTime = Number(session.sessionTime);
+      const sessionPages = Number(session.sessionPages);
+      if (sessionTime === 0) {
+        return sessionPages;
+      }
+      return sessionPages / sessionTime;
     });
   };
 

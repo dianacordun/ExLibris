@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Form, Button, Col, Image, Row, Modal } from 'react-bootstrap';
+import { Form, Button, Col, Image, Row, Modal, Spinner } from 'react-bootstrap';
 import { collection, query, where, getDocs, addDoc, doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db, storage } from '../../firebase';
 import { ref, deleteObject, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -258,7 +258,18 @@ const BookDetails = () => {
 
           
     if (!book) {
-        return <div>Loading...</div>;
+      return (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+          }}
+        >
+          <Spinner animation="border" variant="primary" />
+        </div>
+      );
     }
 
   return (

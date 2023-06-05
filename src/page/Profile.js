@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import CreateProfile from '../components/profile/CreateProfile';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import ProfileManager from '../components/profile/ProfileManager';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db, storage } from '../firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { setProfileDetails } from '../features/user/profileDetailsSlice';
+import { setUser } from '../features/user/userSlice';
+import { Spinner, Modal, Button } from 'react-bootstrap';
+import { auth } from '../firebase';
 
 const fetchProfileData = async (userId) => {
     try {
@@ -52,10 +56,12 @@ const Profile = () => {
   const [picture, setPicture] = useState('');
   const [totalTimeReading, setTotalTimeReading] = useState(0);
   const [totalPagesRead, setTotalPagesRead] = useState(0);
+  const [showModal, setShowModal] = useState(true);
+  const [emailVerified, setEmailVerified] = useState(false);
   const user = useSelector((state) => state.user.value);
   const userId = user?.id;
-
   const dispatch = useDispatch()
+  const navigate = useNavigate();
 
   // Checking to see if profile exists to display the proper page
   const profile = useSelector((state) => state.profile.value);
@@ -79,12 +85,49 @@ const Profile = () => {
       }
       setLoading(false);
     };
-
+    setEmailVerified(auth.currentUser.emailVerified);
+    dispatch(setUser({ id: auth.currentUser.uid, email: auth.currentUser.email, emailVerified: auth.currentUser.emailVerified }));
     fetchData();
   }, [existingProfile, userId, dispatch, firstName, lastName, totalPagesRead, totalTimeReading]);
 
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    navigate('/');
+  }
+
+  // Check if email is verified, if not, display modal
+  if (!emailVerified) {
+    return (
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Email Verification Required</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Please verify your email before configuring your profile. Check your inbox for the verification email.</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <Spinner animation="border" variant="primary" />
+      </div>
+    );
   }
   
   return (

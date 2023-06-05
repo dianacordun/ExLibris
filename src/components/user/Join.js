@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { Button, Form, Container, Row, Col, Image  } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { NavLink, useNavigate } from 'react-router-dom';
-import {  createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import {  createUserWithEmailAndPassword, onAuthStateChanged, sendEmailVerification } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../features/user/userSlice';
@@ -24,8 +24,8 @@ const Join = () => {
         onAuthStateChanged(auth, (user) => {
           if (user) {
             navigate('/profile');
-            dispatch(setUser({ id: user.uid, email: user.email }));
-            localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email }));
+            dispatch(setUser({ id: user.uid, email: user.email, emailVerified: user.emailVerified }));
+            localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email, emailVerified: user.emailVerified }));
             
           }
         });
@@ -36,6 +36,7 @@ const Join = () => {
         e.preventDefault();
 
         if (form.checkValidity() === false) {
+            setError('Please fill in all the required fields.');
             e.stopPropagation();
             return;
         }
@@ -45,9 +46,19 @@ const Join = () => {
                 const user = userCredential.user;
                 console.log(user);
 
+                sendEmailVerification(user)
+                .then(() => {
+                    // Verification email sent successfully
+                    console.log('Verification email sent');
+                })
+                .catch((error) => {
+                    // Error sending verification email
+                    console.log('Error sending verification email', error);
+                })
+
                 navigate('/profile');
-                dispatch(setUser({id: user.uid, email: user.email}));
-                localStorage.setItem('user', JSON.stringify({id: user.uid, email: user.email}));
+                dispatch(setUser({id: user.uid, email: user.email, emailVerified: user.emailVerified}));
+                localStorage.setItem('user', JSON.stringify({id: user.uid, email: user.email, emailVerified: user.emailVerified}));
                 
 
             })
@@ -80,8 +91,8 @@ const Join = () => {
             .then((user) => {
                 if (user) {
                     navigate('/profile');
-                    dispatch(setUser({ id: user.uid, email: user.email }));
-                    localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email }));
+                    dispatch(setUser({ id: user.uid, email: user.email, emailVerified: user.emailVerified }));
+                    localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email, emailVerified: user.emailVerified }));
                 }
             })
             .catch((error) => console.log(error));
@@ -92,8 +103,8 @@ const Join = () => {
             .then((user) => {
                 if (user) {
                     navigate('/profile');
-                    dispatch(setUser({ id: user.uid, email: user.email }));
-                    localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email }));
+                    dispatch(setUser({ id: user.uid, email: user.email, emailVerified: user.emailVerified }));
+                    localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email, emailVerified: user.emailVerified }));
                 }
             })
             .catch((error) => console.log(error));
@@ -106,7 +117,7 @@ const Join = () => {
         <Image src="pagina_sign_in.png" style={{ width: '90vw', height: '100vh' }} fluid />
         </Col>
         <Col className="d-flex justify-content-center align-items-center">
-            <Form noValidate validated={validated} onSubmit={handleSubmit}>
+            <Form validated={validated} onSubmit={handleSubmit}>
             <h2 className="text-center mb-4 form-title">Join Us</h2>
                 <Form.Group className="mb-3 custom-input-border" controlId="formBasicEmail">
                     <Form.Label>Email address</Form.Label>

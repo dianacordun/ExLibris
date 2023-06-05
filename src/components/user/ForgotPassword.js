@@ -20,24 +20,41 @@ const ForgotPassword = () => {
             await sendPasswordResetEmail(auth, email, {url: 'http://localhost:3000'});
             setResetSent(true);
           } catch (error) {
-            setError(error.message);
+            const errorCode = error.code;
+                const errorMessage = error.message;
+                console.log(errorCode, errorMessage)
+                
+                switch(errorCode) {
+                    case 'auth/user-not-found':
+                        setError("There is no account associated with this email address.");
+                        break;
+                    case 'auth/missing-email':
+                        setError("Please provide an email address.");
+                        break;
+                    case 'auth/user-disabled':
+                        setError("User account has been disabled");
+                        break;
+                    default:
+                        setError("Invalid email.");
+                    }
+                return;
           }
 
     }
 
     return (
-        <Container fluid className="p-0">
+        <Container fluid className="p-0 auth-form">
         <Row className=" align-items-center">
             <Col className="p-0 d-none d-md-block">
-            <Image src="signin.jpg" style={{ width: '90vw', height: '100vh' }} fluid />
+            <Image src="pagina_sign_in.png" style={{ width: '100vw', height: '100vh'}} fluid />
             </Col>
             <Col className="d-flex justify-content-center align-items-center">
             {resetSent ? (
                 <p>Password reset email sent. Check your inbox.</p>
             ) : (
-                <Form onSubmit={handleSubmit}>
-                <h2 className="text-center mb-4">Forgot your password?</h2>
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form noValidate onSubmit={handleSubmit}>
+                <h2 className="text-center mb-4 form-title">Forgot your password?</h2>
+                    <Form.Group className="mb-3 custom-input-border" controlId="formBasicEmail">
                         <Form.Label  className="text-muted">Enter your email below and we'll send you a recovery link.</Form.Label>
                         <Form.Control type="email" placeholder="Enter email" onChange={(e)=>setEmail(e.target.value)} required />
                         <Form.Control.Feedback type="invalid">
@@ -46,11 +63,11 @@ const ForgotPassword = () => {
                     </Form.Group>
                     <Container className="d-flex flex-column align-items-center">
                         <Button variant="primary" type="submit">Send</Button>
-                        <p className="text-muted">OR</p>
-                        <p className="text-right display-8">
+                        <p className="text-muted" style={{paddingTop: '10px', marginBottom: '10px'}}>OR</p>
+                        <p className="text-right display-8" style={{paddingTop: '0px'}}>
                             {' '}
                             <NavLink to="/">
-                                Go to sign in page
+                                Go to Sign In page
                             </NavLink>
                         </p> 
                     </Container>

@@ -8,6 +8,7 @@ import ForgotPassword from './components/user/ForgotPassword';
 import BookDetails from './components/books/BookDetails';
 import AddBook from './page/AddBook';
 import Profile from './page/Profile';
+import AboutUs from './page/AboutUs';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from './components/NotFound';
 import './App.css';
@@ -31,6 +32,7 @@ function App() {
                <Route path="/signout" element={<ProtectedRoute private={true} component={SignOut} />}/>
                <Route path="/profile" element={<ProtectedRoute private={true} component={Profile} />}/>
                <Route path="/add" element={<ProtectedRoute private={true} component={AddBook} />}/>
+               <Route path="/details" element={<ProtectedRoute private={true} component={AboutUs} />}/>
                <Route exact path="/books/:bookId" element={<ProtectedRoute private={true} component={BookDetails} />}/>
 
                {/* 404 */}

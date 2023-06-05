@@ -34,10 +34,10 @@ const SignIn = () => {
                 // Signed in
                 const user = userCredential.user;
                 console.log(user);
-                dispatch(setUser({id: user.uid, email: user.email}));
+                dispatch(setUser({id: user.uid, email: user.email, emailVerified: user.emailVerified}));
 
                 // Save user in local storage
-                localStorage.setItem('user', JSON.stringify({id: user.uid, email: user.email}));
+                localStorage.setItem('user', JSON.stringify({id: user.uid, email: user.email, emailVerified: user.emailVerified}));
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -68,8 +68,8 @@ const SignIn = () => {
         signInWithGoogle()
             .then((user) => {
                 if (user) {
-                    dispatch(setUser({ id: user.uid, email: user.email }));
-                    localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email }));
+                    dispatch(setUser({ id: user.uid, email: user.email, emailVerified: user.emailVerified }));
+                    localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email, emailVerified: user.emailVerified }));
                     navigate("/");
                 }
             })
@@ -80,8 +80,8 @@ const SignIn = () => {
         signInWithFacebook()
             .then((user) => {
                 if (user) {
-                    dispatch(setUser({ id: user.uid, email: user.email }));
-                    localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email }));
+                    dispatch(setUser({ id: user.uid, email: user.email, emailVerified: user.emailVerified }));
+                    localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email, emailVerified: user.emailVerified }));
                     navigate("/");
                 }
             })
@@ -95,7 +95,7 @@ const SignIn = () => {
         <Image src="pagina_sign_in.png" style={{ width: '90vw', height: '100vh' }} fluid />
         </Col>
         <Col className="d-flex justify-content-center align-items-center">
-            <Form noValidate validated={validated} onSubmit={handleSubmit}>
+            <Form validated={validated} onSubmit={handleSubmit}>
             <h2 className="text-center mb-4 form-title">Sign In</h2>
                 <Form.Group className="mb-3 custom-input-border" controlId="formBasicEmail">
                     <Form.Label>Email address</Form.Label>
