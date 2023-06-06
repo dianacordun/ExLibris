@@ -28,7 +28,8 @@
 }
 
 .book-cover-modal{
-    height: 150px; 
+    height: 170px!important; 
+    margin-left: 10%;
 }
 
 .smaller-input {
@@ -45,3 +46,248 @@
     background-color: #8319caf9!important;
     
 }
+
+:root {
+    --glass-color: #919EB3;
+    --frame-color: #C19875;
+    --sand-color: #EDD0AA;
+  }
+  
+  
+  .box-canvas{
+    position: relative;
+    margin: auto;
+    display: block;
+    width: 180px;
+    height:300px;
+  }
+  
+  
+  .frame {
+    position: absolute;
+    width: 180px;
+    height: 220px;
+    border-top: 10px solid var(--frame-color);
+    border-bottom: 10px solid var(--frame-color);
+    animation: rotateFrame 5s infinite;
+  }
+  
+  @keyframes rotateFrame {
+    0% {
+      transform: none;
+    }
+    
+    90% {
+      transform: none;
+    }
+    
+    100% {
+      transform: rotate(180deg);
+    }
+  }
+  
+  .top {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 160px;
+    height: 100px;
+    clip-path: polygon(45% 100%, 55% 100%, 100% 0, 0 0);
+  }
+  
+  /* Sand - top */
+  .top::before {
+    content: '';
+    position: absolute;
+    width: 160px;
+    height: 80px;
+    bottom: 0;
+    background: var(--sand-color);
+    animation: 5s lowerTopSand infinite;
+  }
+  
+  .top::after {
+    content: '';
+    position: absolute;
+    top: 0px;
+    left: -15px;
+    width: 190px;
+    height: 190px;
+    transform: rotate(-90deg);
+    background: conic-gradient(
+      from 0deg, 
+      white 0deg, 
+      transparent 90deg,
+      white 180deg
+    );
+  }
+  
+  
+  
+  @keyframes lowerTopSand {
+    0% {
+      transform: none;
+    }
+    
+    100% {
+      transform: translateY(80px);
+    }
+  }
+  
+  .bottom {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 100px;
+    width: 160px;
+    height: 100px;
+    clip-path: polygon(45% 0, 55% 0, 100% 100%, 0 100%);
+  }
+  
+  /* Bottom sand */
+  .bottom::before {
+    content: '';
+    position: absolute;
+    transform: translateX(-50%);
+    left: 50%;
+    width: 160px;
+    height: 80px;
+    bottom: 0;
+    background: var(--sand-color);
+    animation: 5s raiseBottomSand infinite;
+  }
+  
+  .blob {
+    position: absolute;
+    transform: translateX(-50%);
+    top: 10px;
+    left: 50%;
+    content: '';
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--sand-color);
+    animation: raiseMound 5s infinite;
+  }
+  
+  @keyframes raiseMound {
+    0% {
+      transform: translate(-50%, 80px);
+      width: 180px;
+    }
+    
+    100% {
+      transform: translateX(-50%);
+      width: 50px;
+    }
+  }
+  
+  @keyframes raiseBottomSand {
+    0% {
+      transform: translate(-50%, 80px);
+      boder-radius: 0;
+    }
+    
+    100% {
+      transform: translateX(-50%);
+      border-radius: 50% 50% 0 0;
+    }
+  }
+  
+  
+  /* Drip through to bottom */
+  .drip {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    
+    border-top: 10px solid var(--sand-color);
+    
+    animation: fadeDrip 5s infinite;
+  }
+  
+  @keyframes fadeDrip {
+    0% {
+      opacity: 1;
+    }
+    
+    70% {
+      opacity: 1;
+    }
+    
+    100% {
+      opacity: 0;
+    }
+  }
+  
+  .drip::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    width: 3px;
+    height: 200px;
+    background: repeating-linear-gradient(to bottom,
+      var(--sand-color),
+      var(--sand-color) 5px,
+      transparent 5px,
+      transparent 10px
+    );
+    animation: drip 5s infinite;
+  }
+  
+  @keyframes drip {
+    0% {
+      transform: translateY(-150px);
+      opacity: 1;
+    }
+    
+    99% {
+      opacity: 1;
+    }
+    
+    100% {
+      transform: translateY(30px);
+    }
+  }
+  
+  .glass {
+    position: absolute;
+    top: -90px;
+    left: -15px;
+    width: 190px;
+    height: 190px;
+    transform: rotate(-270deg);
+    background: conic-gradient(
+      from 0deg, 
+      white 0deg, 
+      transparent 90deg,
+      white 180deg
+    );
+  }
+
+  .reading-modal {
+    background-color: rgba(164, 164, 188, 0.4);
+  }
+
+  
+  .reading-modal .modal-header {
+    background-color: rgba(244, 241, 240, 1)
+  }
+  
+  .reading-modal .modal-body {
+    background-color: rgba(244, 241, 240, 1)
+  }
+  
+  .reading-modal .modal-footer {
+    background-color: rgba(244, 241, 240, 1)
+  }
+
+  .time-tracker {
+    font-family: Georgia, serif; 
+    font-size: 50px;
+    color: #333333;
+  }

@@ -97,15 +97,32 @@ const ReadingModal = ({ book, showModal, handleCloseModal, startPage}) => {
     }
 
   return (
-    <Modal show={showModal} onHide={handleModalClose}>
+    <Modal show={showModal} onHide={handleModalClose} className='reading-modal'>
       <Modal.Header closeButton>
-        <Modal.Title>{book.title}</Modal.Title>
+        <Modal.Title className='form-title'>{book.title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        <Row>
         {book.coverUrl && (
+          <Col md={5}>
           <Image src={book.coverUrl} thumbnail className='book-cover-modal' alt='Cover' />
-        )}
-        <p>Time spent reading: {formatTime(timer)}</p>
+          </Col>
+          )}
+         
+          <Col><p className='time-tracker'>{formatTime(timer)}</p></Col>
+         </Row>
+         <Row> 
+         <div className="box-canvas d-flex justify-content-center align-items-center">
+          <div className="frame">
+            <div className="top"></div>
+            <div className="bottom">
+              <div className="drip"></div>
+              <div className="blob"></div>
+              <div className="glass"></div>
+            </div> 
+          </div>
+        </div>
+        </Row>
       </Modal.Body>
       {showConfirmation ? (
         <Modal.Footer>

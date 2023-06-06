@@ -28,6 +28,7 @@ const ProfileManager = ({ picture }) => {
 
     const [isEditing, setIsEditing] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
+    const [hasBooks, setHasBooks] = useState(false);
     const [popupMessage, setPopupMessage] = useState(''); 
     const imageSize = {
       width: '200px',
@@ -76,6 +77,11 @@ const ProfileManager = ({ picture }) => {
     
       const snapshot = await getDocs(booksQuery);
       const books = snapshot.docs.map((doc) => doc.data());
+      console.log(books);
+      if (books.length > 0) {
+        setHasBooks(true);
+      }
+      console.log(books);
       return books;
     };
 
@@ -255,7 +261,7 @@ const ProfileManager = ({ picture }) => {
     };
 
     const data = {
-      labels: ['Read', 'Currently Reading', 'Not Read'],
+      labels: ['Not Started', 'Currently Reading', 'Read'],
       datasets: [
         {
           data: bookData.map((dataPoint) => dataPoint.data),
@@ -294,7 +300,7 @@ const ProfileManager = ({ picture }) => {
           </div>
           <div className="col-md-6 ">
               <div style={{ width: '80%', height: '80%' }}>
-               <Pie data={data} />
+              {hasBooks &&  <Pie data={data} />}
               </div>
           </div>
         </div>

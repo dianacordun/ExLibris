@@ -30,7 +30,7 @@ const Dashboard = ({ userId }) => {
             if (searchTerm !== '') {
                 const searchLower = searchTerm.toLowerCase();
                 bookQuery = query(bookQuery, where('searchKeywords', 'array-contains', searchLower));
-              }
+            }
 
             // Sort books
             if (sortBy === 'pages_asc') {

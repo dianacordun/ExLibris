@@ -119,7 +119,7 @@ const Sessions = ({ currentBookId }) => {
             <p className="text-muted">pages per minute </p>
             <p style={{ margin: '0'}}>You'll finish this book</p>
             <p style={{ margin: '0', padding:'0'}}>in aproximately</p>
-            <i class="bi bi-clock"> {((currentBook.pages - currentBook.pagesRead) / ((currentBook.pagesRead / currentBook.timeRead).toFixed(1))).toFixed(0)} minutes</i>
+            <i className="bi bi-clock"> {((currentBook.pages - currentBook.pagesRead) / ((currentBook.pagesRead / currentBook.timeRead).toFixed(1))).toFixed(0)} minutes</i>
           </div>
         </Container>
         

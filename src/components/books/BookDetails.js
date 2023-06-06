@@ -175,9 +175,7 @@ const BookDetails = () => {
                 date: new Date().toISOString(),
             }
             const sessionsCollection = collection(db, 'sessions');
-            await addDoc(sessionsCollection, sessionData);
-
-            // Updating profile reading data
+            await addDoc(sessionsCollection, sessionData); 
             const profileQuery = query(collection(db, 'profile'), where('userId', '==', userId));
             const profileSnapshot = await getDocs(profileQuery);
 
