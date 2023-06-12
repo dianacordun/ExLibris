@@ -94,8 +94,6 @@ const BookDetails = () => {
             searchKeywords: generateSearchKeywords(title, authorFn, authorLn),
             coverUrl: coverImageUrl,
             };
-        
-            await updateDoc(bookRef, updatedBook);
 
             // Delete the previous cover image from Firebase Storage if deleteImage is true
             if (deleteImage && book.coverUrl) {
@@ -103,6 +101,8 @@ const BookDetails = () => {
                 await deleteObject(coverImageRef);
                 updatedBook.coverUrl = ''; 
             }
+
+            await updateDoc(bookRef, updatedBook);
 
             if (coverImage) {
     
@@ -292,7 +292,7 @@ const BookDetails = () => {
                             </div>
                           ) : (
                             <Image
-                              src="/default_book.png"
+                              src="default_book.png"
                               alt="Cover"
                               thumbnail   
                               className='book-cover mb-2 mt-4'
@@ -393,17 +393,17 @@ const BookDetails = () => {
                             />
                             )}
                             <div className="mt-3" style={{ paddingLeft: '2%' }}>
-                              <Button variant="primary" className='btn-space' onClick={handleEdit}>
+                              <Button variant="primary" className='btn-space mt-1' onClick={handleEdit}>
                               Edit
                               </Button>
                               {book.status === 'Currently Reading' ? (
-                              <Button variant='primary' onClick={handleSimpleRead}>
+                              <Button className='mt-1' variant='primary' onClick={handleSimpleRead}>
                                   Continue Reading
                               </Button>
                               ) : (book.status === 'Read' ? (
-                              <Button variant='primary' onClick={handleReread}>Read Again</Button>
+                              <Button className='mt-1' variant='primary' onClick={handleReread}>Read Again</Button>
                               ) : (
-                              <Button variant='primary' onClick={(handleSimpleRead)}>Start Reading</Button>
+                              <Button className='mt-1' variant='primary' onClick={(handleSimpleRead)}>Start Reading</Button>
                               ))}
                             </div>
                             </Col>

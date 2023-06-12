@@ -133,6 +133,7 @@ const ProfileManager = ({ picture }) => {
     
       // Set isEditing back to false after saving
       setIsEditing(false);
+      window.location.reload();
     };
 
     const handleDelete = async (userId) => {
@@ -259,7 +260,7 @@ const ProfileManager = ({ picture }) => {
         console.error('Failed to delete profile and books:', error);
       }
     };
-
+    
     const data = {
       labels: ['Not Started', 'Currently Reading', 'Read'],
       datasets: [

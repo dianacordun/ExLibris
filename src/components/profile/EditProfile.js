@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Image, Form, Button, Container } from 'react-bootstrap';
+import { Image, Form, Button, Container, Col } from 'react-bootstrap';
 import { useSelector, } from 'react-redux';
 import DeleteConfirmationModal from '../popups/DeleteConfirmationModal';
 
@@ -47,49 +47,58 @@ const EditProfile = ({ picture, firstName, lastName, onSave, onDelete, imageSize
   };
 
 
+
   return (
-    <div>
+    <div className='text-center'>
+      <h2>Edit your profile information</h2>
        { picture ? (
-        <Image src={picture} alt="Profile" roundedCircle onClick={handleImageClick} style={imageSize} className="mb-2"/>
+        <Image src={picture} alt="Profile" roundedCircle onClick={handleImageClick} style={imageSize} className="mb-2 mt-2"/>
       ):(
-        <Image src="/defaultProfilePic.png" alt="Profile" roundedCircle  onClick={handleImageClick} style={imageSize}  className="mb-2"/>
+        <Image src="/defaultProfilePic.png" alt="Profile" roundedCircle  onClick={handleImageClick} style={imageSize}  className="mb-2 mt-2"/>
       )
       }
-      <Form>
+      <div className="d-flex justify-content-center">
+        <Form>
+          <Form.Group as={Col} className="mb-3" controlId="title">
+            <Form.Label>Your first name</Form.Label>
+            <Form.Control
+              type="text"
+              className="mb-2"
+              value={editedFirstName}
+              onChange={handleFirstNameChange}
+            />   
+          </Form.Group>
+          <Form.Group as={Col} className="mb-3" controlId="title">
+            <Form.Label>Your last name</Form.Label>
+            <Form.Control
+              type="text"
+              className="mb-2"
+              value={editedLastName}
+              onChange={handleLastNameChange}
+            />  
+          </Form.Group>
         <Form.Control
-          type="text"
-          className="mb-2"
-          value={editedFirstName}
-          onChange={handleFirstNameChange}
+            type="file"
+            className="mb-2"
+            accept="image/*"
+            onChange={handlePictureChange}
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+          />
+          <Container className="p-2">
+            <Button onClick={handleSaveClick}>Save</Button>
+          </Container>
+          <DeleteConfirmationModal
+          show={showConfirmationModal}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
         />
-        <Form.Control
-          type="text"
-          className="mb-2"
-          value={editedLastName}
-          onChange={handleLastNameChange}
-        />
-       <Form.Control
-          type="file"
-          className="mb-2"
-          accept="image/*"
-          onChange={handlePictureChange}
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-        />
-        <Container className="p-2">
-          <Button onClick={handleSaveClick}>Save</Button>
-        </Container>
-        <Container className="d-flex justify-content-end">
-          <Button variant="danger" onClick={handleDeleteClick}>Delete Account</Button>
-        </Container>
-        <DeleteConfirmationModal
-        show={showConfirmationModal}
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
-      />
-      </Form>
+        </Form>
+      </div>
+    <Container className="d-flex justify-content-end">
+      <Button variant="danger" onClick={handleDeleteClick}>Delete Account</Button>
+     </Container>
     </div>
-    
   );
 };
 

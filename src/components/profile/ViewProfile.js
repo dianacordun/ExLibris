@@ -19,7 +19,7 @@ const ViewProfile = ({ picture, firstName, lastName, imageSize, totalPagesRead, 
             <span className='secondary-font'>You've read {totalPagesRead} pages</span>
             <p>
               <i className="bi bi-hourglass-split" style={{ fontSize: '2em' }}> </i>
-              <span className='secondary-font'>You spent {totalTimeReading} minutes reading</span>
+              <span className='secondary-font'>You spent {totalTimeReading === 1 ? `${totalTimeReading} minute` : `${totalTimeReading} minutes`} reading</span>
               
             </p>
       </div>

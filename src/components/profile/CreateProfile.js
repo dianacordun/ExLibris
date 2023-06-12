@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { MDBCard, MDBCardBody, MDBCol, MDBInput, MDBRow, MDBTypography } from 'mdb-react-ui-kit';
+import {
+  MDBContainer,
+  MDBCard,
+  MDBCardBody,
+  MDBCardImage,
+  MDBRow,
+  MDBCol,
+  MDBInput
+} from 'mdb-react-ui-kit';
 import { db, storage } from '../../firebase';
 import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes } from 'firebase/storage';
@@ -60,7 +68,7 @@ const CreateProfile = ({ userId }) => {
 
   return (
     <>
-    {/* Popup Modal */}
+
     <Modal show={showPopup} onHide={handleClosePopup} backdrop="static" keyboard={false}>
         <Modal.Header closeButton>
           <Modal.Title>Complete your profile to proceed.</Modal.Title>
@@ -74,8 +82,8 @@ const CreateProfile = ({ userId }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-      {/* Rest of the component */}
-      <div className="mx-auto mt-5" style={{ maxWidth: '800px', height: '400px' }}>
+
+      {/* <div className="mx-auto mt-5" style={{ maxWidth: '800px', height: '400px' }}>
         <MDBRow className="pt-5 mx-4 justify-content-center">
             <MDBCard className="card-custom pb-4 shadow">
               <MDBCardBody className="mt-0 mx-5">
@@ -122,7 +130,61 @@ const CreateProfile = ({ userId }) => {
               </MDBCardBody>
             </MDBCard>
         </MDBRow>
-      </div>
+      </div> */}
+
+      <MDBContainer fluid>
+      <MDBRow className='d-flex justify-content-center align-items-center'>
+        <MDBCol lg='8' style={{paddingLeft:"10%"}}>
+
+          <MDBCard className='my-5 rounded-3' style={{ maxWidth: '600px'}}>
+            <MDBCardImage src='logo_app.png' className='w-100 rounded-top'  alt="Sample photo"/>
+
+            <MDBCardBody className='px-5'>
+
+              <h3 className="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2 form-title text-center">Complete your profile</h3>
+              <form className="mb-0" onSubmit={handleSubmit}>
+                  {error && <p>{error}</p>}
+
+              <MDBRow>
+                <MDBCol md='6'>
+                  <MDBInput label='First name' type='text' required  value={first_name}
+                                    onChange={(event) => setFirstName(event.target.value)} />
+                </MDBCol>
+                <MDBCol md='6'>
+                  <MDBInput label='Last name' type='text' required value={last_name}
+                            onChange={(event) => setLastName(event.target.value)}/>
+                </MDBCol>
+              </MDBRow>
+
+              <MDBRow>
+                  <div className="form-outline">
+                          <input type="file" 
+                                  className="form-control" 
+                                  id="profilePicture"  
+                                  accept="image/*" 
+                                  onChange={(event) => {
+                                    const file = event.target.files[0]; // Access the selected file
+                              
+                                    if (file) {
+                                      setProfilePic(file); // Set the File object to the state
+                                    }
+                                  }}/>
+                          <label className="form-label" htmlFor="profilePicture">
+                            Profile Picture
+                          </label>
+                  </div>
+              </MDBRow>
+
+              <div className="float-end">
+                      <Button variant="primary" type="submit">Done</Button>
+              </div>
+              </form>
+            </MDBCardBody>
+          </MDBCard>
+        </MDBCol>
+      </MDBRow>
+
+    </MDBContainer>
     </>
   );
 };

@@ -311,3 +311,30 @@
     font-family: "Lucida Console", "Courier New", monospace;
     font-size: 20px;
 }
+
+.background-image {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 20px;
+  }
+
+  .background-image::after {
+    content: "";
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.5); /* Adjust the last value (0.5) to set the desired transparency */
+  }
+  
+  .about-us {
+    font-size: 19px;
+    background-color: rgba(128, 128, 128, 0.7);
+    border: 1px solid gray;
+    padding: 30px;
+    color: black;
+  }
+  
+
+  
+
+  
+  
