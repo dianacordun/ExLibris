@@ -8,9 +8,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db, storage } from '../firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { setProfileDetails } from '../features/user/profileDetailsSlice';
-import { setUser } from '../features/user/userSlice';
 import { Spinner, Modal, Button } from 'react-bootstrap';
-import { auth } from '../firebase';
 
 const fetchProfileData = async (userId) => {
     try {
@@ -59,6 +57,7 @@ const Profile = () => {
   const [showModal, setShowModal] = useState(true);
   const [emailVerified, setEmailVerified] = useState(false);
   const user = useSelector((state) => state.user.value);
+  console.log(user);
   const userId = user?.id;
   const dispatch = useDispatch()
   const navigate = useNavigate();
@@ -85,10 +84,9 @@ const Profile = () => {
       }
       setLoading(false);
     };
-    setEmailVerified(auth.currentUser.emailVerified);
-    dispatch(setUser({ id: auth.currentUser.uid, email: auth.currentUser.email, emailVerified: auth.currentUser.emailVerified }));
+    setEmailVerified(user?.emailVerified);
     fetchData();
-  }, [existingProfile, userId, dispatch, firstName, lastName, totalPagesRead, totalTimeReading]);
+  }, [existingProfile, userId, dispatch, firstName, lastName, totalPagesRead, totalTimeReading, user.emailVerified]);
 
 
   const handleCloseModal = () => {

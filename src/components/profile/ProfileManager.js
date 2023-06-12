@@ -299,15 +299,28 @@ const ProfileManager = ({ picture }) => {
             />
           </div>
           <div className="col-md-6 ">
-              <div style={{ width: '80%', height: '80%' }}>
-              {hasBooks &&  <Pie data={data} />}
+              <div style={{ width: '80%', height: '80%', position: 'relative'  }}>
+              {hasBooks &&  
+                <>
+                  <Pie data={data} />
+                  <div className="arrow">
+                    <i className="bi bi-arrow-90deg-up "></i>
+                    <span className='arrow-text'>Your Books</span>
+                  </div>
+                </>
+              }
               </div>
           </div>
+          <div style={{ position: 'fixed', bottom: '0', left: '43%', padding: '10px' }}>
+            <Button style={{ width: '120px' }} onClick={handleEditClick}>
+              Edit Profile
+            </Button>
+          </div>
+
         </div>
       </Container>
         
       )}
-      {!isEditing && <Button onClick={handleEditClick}>Edit</Button>}
       <ErrorPopup
         show={showPopup}
         onClose={() => setShowPopup(false)}

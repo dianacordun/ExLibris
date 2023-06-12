@@ -5,15 +5,24 @@ const ViewProfile = ({ picture, firstName, lastName, imageSize, totalPagesRead, 
 
   return (
     <Container>
-      { picture ? (
-        <Image src={picture} alt="Profile" roundedCircle style={imageSize} />
-      ):(
-        <Image src="/defaultProfilePic.png" alt="Profile" roundedCircle style={imageSize}/>
-      )
-      }
-      <h2>{firstName} {lastName}</h2>
-      <h2> Pages: {totalPagesRead}</h2>
-      <h2> Time: {totalTimeReading}</h2>
+      <h2>Hello, {firstName} {lastName}!</h2>
+      <Container className='mb-5 mt-4'>
+            {picture ? (
+              <Image src={picture} alt="Profile" roundedCircle style={imageSize} />
+            ) : (
+              <Image src="/defaultProfilePic.png" alt="Profile" roundedCircle style={imageSize} />
+            )}
+            
+      </Container>
+      <div>
+            <i className="bi bi-book" style={{ fontSize: '2em' }}> </i>
+            <span className='secondary-font'>You've read {totalPagesRead} pages</span>
+            <p>
+              <i className="bi bi-hourglass-split" style={{ fontSize: '2em' }}> </i>
+              <span className='secondary-font'>You spent {totalTimeReading} minutes reading</span>
+              
+            </p>
+      </div>
     </Container>
   );
 };

@@ -287,3 +287,27 @@
     font-size: 50px;
     color: #333333;
   }
+
+  .arrow {
+    font-size: 3rem; 
+    position: absolute;
+    left: 70%;
+    transform: translateX(-50%);
+    color: #2c0429; 
+
+  }
+
+  .arrow-text {
+  color: #2c0429; 
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  font-family: "Lucida Console", "Courier New", monospace;
+  transform: translateY(20%);
+  white-space: nowrap;
+}
+
+.secondary-font {
+    font-family: "Lucida Console", "Courier New", monospace;
+    font-size: 20px;
+}
