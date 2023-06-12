@@ -108,7 +108,7 @@ const Sessions = ({ currentBookId }) => {
 
   return (
     <div>
-      <h3>Reading History</h3>
+      <h3 className='form-title'>Reading History</h3>
       {sessions.length > 0 ? (
         <>
           <Line data={data} options={options}/>

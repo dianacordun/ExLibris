@@ -273,139 +273,170 @@ const BookDetails = () => {
   return (
     <Layout title='ExLibris | Books' content='Book Details'>
           {editMode ? (
-            <Col className="d-flex justify-content-center align-items-center">
-            <Form onSubmit={handleUpdate} className="text-center" style={{ width: '40%' }}>
-            <Form.Group as={Col} className="mb-3" controlId="coverImage">
-              {coverImageUrl ? (
-                    <div className="d-flex flex-column align-items-center mb-3">
-                      <Image
-                        src={coverImageUrl}
-                        thumbnail   
-                        alt="Cover"
-                        onClick={handleImageClick}
-                        className='book-cover mb-2'
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <Button variant="danger" onClick={handleDeleteImage}>Delete Cover</Button>
+            <Col >
+              <Form onSubmit={handleUpdate} className="text-center" >
+                <Row>
+                  <Col md={6}>
+                    <Form.Group as={Col} className="mb-3" controlId="coverImage">
+                      {coverImageUrl ? (
+                            <div className="d-flex flex-column align-items-end mb-3 mr-3">
+                              <Image
+                                src={coverImageUrl}
+                                thumbnail   
+                                alt="Cover"
+                                onClick={handleImageClick}
+                                className='book-cover mb-2 mt-4'
+                                style={{ cursor: 'pointer', marginRight:'10%' }}
+                              />
+                              <Button variant="danger"  style={{marginRight:'20%' }} onClick={handleDeleteImage}>Delete Cover</Button>
+                            </div>
+                          ) : (
+                            <Image
+                              src="/default_book.png"
+                              alt="Cover"
+                              thumbnail   
+                              className='book-cover mb-2 mt-4'
+                              onClick={handleImageClick}
+                              style={{ cursor: 'pointer' }}
+                            />
+                          )}
+                          <Form.Control
+                            type="file"
+                            accept="image/*"
+                            onChange={handlePictureChange}
+                            ref={fileInputRef}
+                            style={{ display: 'none' }}
+                          />
+                    </Form.Group>
+                  </Col>
+                  <Col md={5} className='mt-3' >
+                    <Form.Group sm={9} as={Col} className="mb-3" controlId="title">
+                      <Form.Label>Title</Form.Label>
+                      <Form.Control type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
+                    </Form.Group>
+                    <Form.Group sm={9} as={Col} className="mb-3" controlId="authorFn">
+                      <Form.Label>Author's first name</Form.Label>
+                      <Form.Control type="text" value={authorFn} onChange={(e) => setAuthorFn(e.target.value)} />
+                    </Form.Group>
+                    <Form.Group sm={9} as={Col} className="mb-3" controlId="authorLn">
+                      <Form.Label>Author's last name</Form.Label>
+                      <Form.Control type="text" value={authorLn} onChange={(e) => setAuthorLn(e.target.value)} />
+                    </Form.Group>
+                    <Form.Group sm={9} as={Col} className="mb-3" controlId="pagesRead">
+                        <Form.Label>Number of pages read</Form.Label>
+                        <div className="d-flex align-items-center">
+                            <Form.Control
+                            type="text"
+                            value={pagesRead}
+                            onChange={handlePagesReadInput}
+                            isInvalid={!isValid}
+                            style={{width: '90%'}}
+                            />
+                            <span className="ml-5"> / {book.pages}</span>
+                        </div>
+                        {!isValid && (
+                        <Form.Control.Feedback type="invalid">
+                            Please enter a valid number.
+                        </Form.Control.Feedback>
+                        )}
+                    </Form.Group>
+                    <div className="d-flex justify-content-between">
+                        <div>
+                        <Button variant="primary" type="submit" className='btn-space'>
+                            Update
+                        </Button>
+                        <Button variant="secondary" onClick={handleCancelEdit} className="btn-space" >
+                            Cancel
+                        </Button>
+                        </div>
                     </div>
-                  ) : (
-                    <Image
-                      src="/default_book.png"
-                      alt="Cover"
-                      thumbnail   
-                      className='book-cover mb-2'
-                      onClick={handleImageClick}
-                      style={{ cursor: 'pointer' }}
-                    />
-                  )}
-                  <Form.Control
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePictureChange}
-                    ref={fileInputRef}
-                    style={{ display: 'none' }}
-                  />
-            </Form.Group>
-            <Form.Group as={Col} className="mb-3" controlId="title">
-              <Form.Label>Title</Form.Label>
-              <Form.Control type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
-            </Form.Group>
-            <Form.Group as={Col} className="mb-3" controlId="authorFn">
-              <Form.Label>Author First Name</Form.Label>
-              <Form.Control type="text" value={authorFn} onChange={(e) => setAuthorFn(e.target.value)} />
-            </Form.Group>
-            <Form.Group as={Col} className="mb-3" controlId="authorLn">
-              <Form.Label>Author Last Name</Form.Label>
-              <Form.Control type="text" value={authorLn} onChange={(e) => setAuthorLn(e.target.value)} />
-            </Form.Group>
-            <Form.Group as={Col} className="mb-3" controlId="pagesRead">
-                <Form.Label>Number of pages read</Form.Label>
-                <div className="d-flex align-items-center">
-                    <Form.Control
-                    type="text"
-                    value={pagesRead}
-                    className="smaller-input"
-                    onChange={handlePagesReadInput}
-                    isInvalid={!isValid}
-                    />
-                    <span className="ml-2">/ {book.pages}</span>
-                </div>
-                {!isValid && (
-                <Form.Control.Feedback type="invalid">
-                    Please enter a valid number.
-                </Form.Control.Feedback>
-                )}
-            </Form.Group>
-            <div className="d-flex justify-content-between">
-                <Button variant="danger" onClick={() => setShowConfirmationModal(true)}>Delete Book</Button>
-                <div>
-                <Button variant="primary" type="submit" className='btn-space'>
-                    Update
-                </Button>
-                <Button variant="secondary" onClick={handleCancelEdit} className="btn-space mr-2">
-                    Cancel
-                </Button>
-                </div>
-            </div>
-            <Modal show={showConfirmationModal} onHide={() => setShowConfirmationModal(false)} centered>
-                <Modal.Header closeButton>
-                <Modal.Title>Are you sure?</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>This action is not reversible and all the data regarding the book will be lost.</Modal.Body>
-                <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShowConfirmationModal(false)}>
-                    No
-                </Button>
-                <Button variant="danger" onClick={handleDeleteBook}>
-                    Yes
-                </Button>
-                </Modal.Footer>
-            </Modal>
-          </Form>
+                  </Col>
+                </Row>
+                <Button variant="danger" className='mt-5' onClick={() => setShowConfirmationModal(true)}>Delete Book</Button>
+              <Modal show={showConfirmationModal} onHide={() => setShowConfirmationModal(false)} centered>
+                  <Modal.Header closeButton>
+                  <Modal.Title>Are you sure?</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>This action is not reversible and all the data regarding the book will be lost.</Modal.Body>
+                  <Modal.Footer>
+                  <Button variant="secondary" onClick={() => setShowConfirmationModal(false)}>
+                      No
+                  </Button>
+                  <Button variant="danger" onClick={handleDeleteBook}>
+                      Yes
+                  </Button>
+                  </Modal.Footer>
+              </Modal>
+            </Form>
           </Col>
           ) : (
             <>
                 <Row>
-                    <Col md={6}>
+                    <Col md={6} className='pb-3'>
                         {/* Left part of the page */}
-                        <h2>{book.title}</h2>
-                        {coverImageUrl ? (
-                        <Image
-                            src={coverImageUrl}
-                            thumbnail  
-                            className='book-cover'
-                            alt="Cover"
-                        />
-                        ) : (
-                        <Image
-                            src="/default_book.png"
-                            thumbnail  
-                            className='book-cover'
-                            alt="Cover"
-                        />
-                        )}
-                        <p>Author: {book.author_fn} {book.author_ln}</p>
-                        <p>Genre: {book.genre}</p>
-                        <p>Pages: {book.pages}</p>
-                        <p>Pages Read: {book.pagesRead}</p>
-                        <p>Status: {book.status}</p>
-                        <Button variant="primary" className='btn-space' onClick={handleEdit}>
-                        Edit
-                        </Button>
-                        {book.status === 'Currently Reading' ? (
-                        <Button variant='primary' onClick={handleSimpleRead}>
-                            Continue Reading
-                        </Button>
-                        ) : (book.status === 'Read' ? (
-                        <Button variant='primary' onClick={handleReread}>Read Again</Button>
-                        ) : (
-                        <Button variant='primary' onClick={(handleSimpleRead)}>Start Reading</Button>
-                        ))}
+                        <h2 className='form-title mb-4'>{book.title}</h2>
+                        <Row>
+                          <Col>
+                            {coverImageUrl ? (
+                            <Image
+                                src={coverImageUrl}
+                                thumbnail  
+                                className='book-cover'
+                                alt="Cover"
+                            />
+                            ) : (
+                            <Image
+                                src="/default_book.png"
+                                thumbnail  
+                                className='book-cover'
+                                alt="Cover"
+                            />
+                            )}
+                            <div className="mt-3" style={{ paddingLeft: '2%' }}>
+                              <Button variant="primary" className='btn-space' onClick={handleEdit}>
+                              Edit
+                              </Button>
+                              {book.status === 'Currently Reading' ? (
+                              <Button variant='primary' onClick={handleSimpleRead}>
+                                  Continue Reading
+                              </Button>
+                              ) : (book.status === 'Read' ? (
+                              <Button variant='primary' onClick={handleReread}>Read Again</Button>
+                              ) : (
+                              <Button variant='primary' onClick={(handleSimpleRead)}>Start Reading</Button>
+                              ))}
+                            </div>
+                            </Col>
+                            <Col>
+                            <div >
+                              <p style={{ paddingTop: '0' }}>
+                                <strong>Author</strong>
+                              </p>
+                              <p style={{ paddingTop: '0' }}>{book.author_fn} {book.author_ln}</p>
+                              <p style={{ paddingTop: '0' }}>
+                                <strong>Genre</strong>
+                              </p>
+                              <p style={{ paddingTop: '0' }}>{book.genre}</p>
+                              <p style={{ paddingTop: '0' }}>
+                                <strong>Pages</strong>
+                              </p>
+                              <p style={{ paddingTop: '0' }}>{book.pages}</p>
+                              <p style={{ paddingTop: '0' }}>
+                                <strong>Pages Read</strong>
+                              </p>
+                              <p style={{ paddingTop: '0' }}>{book.pagesRead}</p>
+                              <p style={{ paddingTop: '0' }}>
+                                <strong>Status</strong>
+                              </p>
+                              <p style={{ paddingTop: '0' }}>{book.status}</p>
+                            </div>
+                            </Col>
+                          </Row>
                     </Col>
                     <Col md={6}>
                         <Sessions currentBookId = {bookId}/>
                     </Col>
-                    </Row>
+                </Row>
 
                 <ReadingModal
                     book={book}
