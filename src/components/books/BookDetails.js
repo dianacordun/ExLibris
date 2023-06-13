@@ -102,8 +102,6 @@ const BookDetails = () => {
                 updatedBook.coverUrl = ''; 
             }
 
-            await updateDoc(bookRef, updatedBook);
-
             if (coverImage) {
     
                 // Upload the new cover image to Firebase Storage
@@ -112,6 +110,8 @@ const BookDetails = () => {
                 const downloadURL = await getDownloadURL(storageRef);
                 updatedBook.coverUrl = downloadURL;
             }
+
+            await updateDoc(bookRef, updatedBook);
         
             // Reset the form fields and exit edit mode
             setTitle('');
@@ -292,7 +292,7 @@ const BookDetails = () => {
                             </div>
                           ) : (
                             <Image
-                              src="default_book.png"
+                              src="/default_book.png"
                               alt="Cover"
                               thumbnail   
                               className='book-cover mb-2 mt-4'

@@ -6,7 +6,7 @@ const NavBar = () => {
     return (
       <Navbar expand="sm" className='custom-navbar'>
         <Link className="navbar-brand" to="/">
-          <img className="navbar-brand" src="/logo_app.png" alt="ExLibris" style={{paddingLeft:'10px', width: '90px', height: '70px', objectFit: 'scale-down' }}/>
+          <img className="navbar-brand" src="/logo_app.svg" alt="ExLibris" style={{paddingLeft:'10px', width: '90px', height: '70px', objectFit: 'scale-down' }}/>
         </Link>
         <Navbar.Toggle aria-controls="navbarNav" />
 

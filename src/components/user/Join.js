@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '../../features/user/userSlice';
 import { signInWithGoogle, signInWithFacebook } from '../services/thirdparty';
 import '../Forms.css';
-
+import { Helmet } from 'react-helmet';
  
 const Join = () => {
     const navigate = useNavigate();
@@ -111,6 +111,11 @@ const Join = () => {
     };
 
   return (
+    <>
+    <Helmet>
+            <title>ExLibris | Join</title>
+            <meta name = 'description' content='Join' />
+    </Helmet>
     <Container fluid className="p-0 auth-form">
       <Row className=" align-items-center">
         <Col className="p-0 d-none d-md-block">
@@ -165,7 +170,7 @@ const Join = () => {
         </Col>
       </Row>
     </Container>
-
+    </>
   );
 }
  

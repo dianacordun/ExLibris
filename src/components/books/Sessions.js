@@ -126,7 +126,7 @@ const Sessions = ({ currentBookId }) => {
         <ListGroup style={{ width: '70%', overflowY: 'scroll' }}>
           {sessions.length > 0 ? (
             sessions.map((session) => (
-              <ListGroup.Item key={session.id}>
+              <ListGroup.Item key={session.date}>
                 <p>Date: {formatDate(session.date)}</p>
                 <p>Duration: {session.sessionTime === 1 ? `${session.sessionTime} minute` : `${session.sessionTime} minutes`}</p>
                 <p>Pages: {session.sessionPages === 1 ? `${session.sessionPages} page` : `${session.sessionPages} pages`}</p>

@@ -8,7 +8,7 @@ import '../Forms.css';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../features/user/userSlice';
 import { signInWithGoogle, signInWithFacebook } from '../services/thirdparty';
-
+import { Helmet } from 'react-helmet';
  
 const SignIn = () => {
     const [email, setEmail] = useState('');
@@ -89,6 +89,11 @@ const SignIn = () => {
     };
 
   return (
+    <>
+    <Helmet>
+            <title>ExLibris | Sign In</title>
+            <meta name = 'description' content='Sign In' />
+    </Helmet>
     <Container fluid className="p-0 auth-form">
       <Row className=" align-items-center">
         <Col className="p-0 d-none d-md-block">
@@ -149,7 +154,7 @@ const SignIn = () => {
         </Col>
       </Row>
     </Container>
-
+    </>
   );
 }
  

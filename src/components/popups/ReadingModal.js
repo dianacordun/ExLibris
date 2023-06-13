@@ -173,7 +173,7 @@ const ReadingModal = ({ book, showModal, handleCloseModal, startPage}) => {
                             )}
                         </Form.Group>
 
-                        <Button variant="primary" className="mb-2" type="submit">
+                        <Button variant="primary" className="mb-2 btn-space" type="submit">
                             Finish Session
                         </Button>
                         <Button variant="secondary" className = "mb-2" onClick={() => setFinish(false)}>

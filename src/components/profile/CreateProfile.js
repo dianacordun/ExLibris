@@ -137,7 +137,7 @@ const CreateProfile = ({ userId }) => {
         <MDBCol lg='8' style={{paddingLeft:"10%"}}>
 
           <MDBCard className='my-5 rounded-3' style={{ maxWidth: '600px'}}>
-            <MDBCardImage src='logo_app.png' className='w-100 rounded-top'  alt="Sample photo"/>
+            <MDBCardImage src='logo_app.svg' className='w-100 rounded-top'  alt="Sample photo"/>
 
             <MDBCardBody className='px-5'>
 
