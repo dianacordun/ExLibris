@@ -135,7 +135,7 @@ const Sessions = ({ currentBookId }) => {
       {sessions.length > 0 ? (
         <>
           <Line data={data} options={options}/>
-          <div style={{ maxHeight: '280px', paddingTop: '20px', paddingLeft: "40px", display: 'flex' }}>
+          <div style={{ maxHeight: '250px', paddingTop: '20px', paddingLeft: "40px", display: 'flex' }}>
       <Container>
           <div style={{ paddingLeft: '30px', paddingTop:'30px'}}>
             <h2 style={{ color: 'purple', marginBottom: '5px' }}>{(currentBook.pagesRead / currentBook.timeRead).toFixed(1)}</h2>
