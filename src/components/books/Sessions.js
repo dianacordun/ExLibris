@@ -5,9 +5,11 @@ import { db } from '../../firebase';
 import { Container, ListGroup } from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
+import { compareAsc } from 'date-fns';
 
 const Sessions = ({ currentBookId }) => {
   const [sessions, setSessions] = useState([]);
+  const [sortedSessions, setSortedSessions] = useState([]);
   const [currentBook, setCurrentBook] = useState({ pagesRead: 0 });
 
   useEffect(() => {
@@ -26,6 +28,7 @@ const Sessions = ({ currentBookId }) => {
       
           // Set the fetched sessions in state
           setSessions(sessions);
+          setSortedSessions(sessions.sort((a, b) => compareAsc(new Date(a.date), new Date(b.date))));
         } catch (error) {
           console.error('Error fetching sessions:', error);
         }
@@ -56,7 +59,7 @@ const Sessions = ({ currentBookId }) => {
   }, [currentBookId]);
 
   const generateChartData = () => {
-    return sessions.map((session) => {
+    return sortedSessions.map((session) => {
       const sessionTime = Number(session.sessionTime);
       const sessionPages = Number(session.sessionPages);
       if (sessionTime === 0) {
@@ -66,10 +69,14 @@ const Sessions = ({ currentBookId }) => {
     });
   };
 
-  const sortedChartData = generateChartData().sort((a, b) => a - b);
+  const sortedChartData = generateChartData();
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+  const formatHour = (dateString) => {
+    const options = { hour: 'numeric', minute: 'numeric' };
+    return new Date(dateString).toLocaleTimeString(undefined, options);
   };
 
   const data = {
@@ -79,7 +86,8 @@ const Sessions = ({ currentBookId }) => {
         data: sortedChartData,
         borderColor: 'purple',
         pointBorderColor: 'black',
-        tension: 0.4
+        tension: 0.3,
+        backgroundColor: 'rgba(135, 29, 125, 0.92)'
       }
     ]
   };
@@ -88,7 +96,11 @@ const Sessions = ({ currentBookId }) => {
   scales: {
     x: {
       type: 'category',
-      labels: sortedChartData.map((_, index) => index + 1),
+      labels: sortedChartData.map((_, index) => index + 1), 
+      title: {
+        display: true,
+        text: 'Session number', 
+      },
     },
     y: {
       type: 'linear',
@@ -97,12 +109,23 @@ const Sessions = ({ currentBookId }) => {
       ticks: {
         stepSize: 1,
         callback: function (value) {
-          return value.toFixed(2);
+          return value.toFixed(0);
         },
+      },
+      title: {
+        display: true,
+        text: 'Number of pages', 
       },
     },
   },
+  plugins: {
+    title: {
+      display: true,
+      text: 'Your reading progress',
+    },
+  },
 };
+
 
 
 
@@ -125,11 +148,13 @@ const Sessions = ({ currentBookId }) => {
         
         <ListGroup style={{ width: '70%', overflowY: 'scroll' }}>
           {sessions.length > 0 ? (
-            sessions.map((session) => (
+            sessions.map((session, index) => (
               <ListGroup.Item key={session.date}>
-                <p>Date: {formatDate(session.date)}</p>
-                <p>Duration: {session.sessionTime === 1 ? `${session.sessionTime} minute` : `${session.sessionTime} minutes`}</p>
-                <p>Pages: {session.sessionPages === 1 ? `${session.sessionPages} page` : `${session.sessionPages} pages`}</p>
+                <h5 className='form-data' style={{textAlign:'center'}}>{index + 1}</h5>
+                <p className='form-data' style={{paddingTop:'0'}}><strong>Date:</strong> {formatDate(session.date)}</p>
+                <p className='form-data' style={{paddingTop:'0'}}><strong>Ended at:</strong> {formatHour(session.date)}</p>
+                <p className='form-data' style={{paddingTop:'0'}}><strong>Duration:</strong> {session.sessionTime === 1 ? `${session.sessionTime} minute` : `${session.sessionTime} minutes`}</p>
+                <p className='form-data' style={{paddingTop:'0'}}><strong>Pages:</strong> {session.sessionPages === 1 ? `${session.sessionPages} page` : `${session.sessionPages} pages`}</p>
               </ListGroup.Item>
             ))
           ) : (
