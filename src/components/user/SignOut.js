@@ -12,7 +12,6 @@ const SignOut = () => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch()
-
     useEffect(() => {
         signOut(auth).then(() => {
             // Sign-out successful.
@@ -24,6 +23,7 @@ const SignOut = () => {
             dispatch(setExistingProfile(null));
             localStorage.removeItem('user');
             localStorage.removeItem('profileExists');
+            localStorage.removeItem('admin');
             
         }).catch((error) => {
             // An error happened.

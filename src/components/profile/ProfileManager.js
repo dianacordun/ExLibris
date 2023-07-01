@@ -29,7 +29,7 @@ const ProfileManager = ({ picture }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [hasBooks, setHasBooks] = useState(false);
-    const [popupMessage, setPopupMessage] = useState(''); 
+    const [popupMessage, setPopupMessage] = useState('Something went wrong!'); 
     const imageSize = {
       width: '200px',
       height: '200px', 
@@ -145,8 +145,22 @@ const ProfileManager = ({ picture }) => {
         
         if (!isGoogleUser && !isFacebookUser){           // Simple user
           const credential = promptUserForCredentials(); 
-          await reauthenticateWithCredential(user, credential);
-
+          try {
+            await reauthenticateWithCredential(user, credential);
+          } catch (error) {
+              if (error.code === 'auth/user-mismatch') {
+                console.error('User mismatch');
+                setPopupMessage('User mismatch! Please make sure you are using the correct account.');
+              }else if (error.code === 'auth/invalid-email') {
+                console.error('Invalid email');
+                setPopupMessage('Please provide a valid email address.');
+              }else if (error.code === 'auth/wrong-password' || error.code === 'auth/missing-password') {
+                console.error('Wrong Password');
+                setPopupMessage('Please provide the correct password for your account.');
+              }
+              setShowPopup(true);
+              return;
+          }
         } else {
             const provider = isGoogleUser ? new GoogleAuthProvider() : new FacebookAuthProvider();
           
@@ -312,8 +326,8 @@ const ProfileManager = ({ picture }) => {
               }
               </div>
           </div>
-          <div style={{ position: 'fixed', bottom: '0', left: '43%', padding: '10px' }}>
-            <Button style={{ width: '120px' }} onClick={handleEditClick}>
+          <div style={{ position: 'fixed', bottom: '0', left: '47%', padding: '10px' }}>
+            <Button style={{ width: '130px' }} onClick={handleEditClick}>
               Edit Profile
             </Button>
           </div>

@@ -59,7 +59,7 @@ const EditProfile = ({ picture, firstName, lastName, onSave, onDelete, imageSize
       }
       <div className="d-flex justify-content-center">
         <Form>
-          <Form.Group as={Col} className="mb-3" controlId="title">
+          <Form.Group as={Col} className="mb-3" controlId="firstname">
             <Form.Label>Your first name</Form.Label>
             <Form.Control
               type="text"
@@ -68,7 +68,7 @@ const EditProfile = ({ picture, firstName, lastName, onSave, onDelete, imageSize
               onChange={handleFirstNameChange}
             />   
           </Form.Group>
-          <Form.Group as={Col} className="mb-3" controlId="title">
+          <Form.Group as={Col} className="mb-3" controlId="lastname">
             <Form.Label>Your last name</Form.Label>
             <Form.Control
               type="text"

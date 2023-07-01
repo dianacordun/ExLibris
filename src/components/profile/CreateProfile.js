@@ -82,61 +82,11 @@ const CreateProfile = ({ userId }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-
-      {/* <div className="mx-auto mt-5" style={{ maxWidth: '800px', height: '400px' }}>
-        <MDBRow className="pt-5 mx-4 justify-content-center">
-            <MDBCard className="card-custom pb-4 shadow">
-              <MDBCardBody className="mt-0 mx-5">
-                <div className="text-center mb-3 pb-2 mt-3">
-                  <MDBTypography tag="h4" style={{ color: '#495057' }} >Complete your profile</MDBTypography>
-                </div>
-
-                <form className="mb-0" onSubmit={handleSubmit}>
-                  {error && <p>{error}</p>}
-                  <MDBRow className="mb-4">
-                    <MDBCol>
-                      <MDBInput label='First name' type='text' required  value={first_name}
-                                onChange={(event) => setFirstName(event.target.value)} />
-                    </MDBCol>
-                    <MDBCol>
-                      <MDBInput label='Last name' type='text' required value={last_name}
-                                onChange={(event) => setLastName(event.target.value)}/>
-                    </MDBCol>
-                  </MDBRow>
-                  <MDBRow className="mb-4">
-                    <MDBCol>
-                      <div className="form-outline">
-                        <input type="file" 
-                                className="form-control" 
-                                id="profilePicture"  
-                                accept="image/*" 
-                                onChange={(event) => {
-                                  const file = event.target.files[0]; // Access the selected file
-                            
-                                  if (file) {
-                                    setProfilePic(file); // Set the File object to the state
-                                  }
-                                }}/>
-                        <label className="form-label" htmlFor="profilePicture">
-                          Profile Picture
-                        </label>
-                      </div>
-                    </MDBCol>
-                  </MDBRow>
-                  <div className="float-end">
-                      <Button variant="primary" type="submit">Done</Button>
-                  </div>
-                </form>
-              </MDBCardBody>
-            </MDBCard>
-        </MDBRow>
-      </div> */}
-
-      <MDBContainer fluid>
+      <MDBContainer style={{marginTop:'0px'}} fluid>
       <MDBRow className='d-flex justify-content-center align-items-center'>
-        <MDBCol lg='8' style={{paddingLeft:"10%"}}>
+        <MDBCol lg='8' style={{paddingLeft:"16%"}}>
 
-          <MDBCard className='my-5 rounded-3' style={{ maxWidth: '600px'}}>
+          <MDBCard className='rounded-3' style={{ maxWidth: '450px'}}>
             <MDBCardImage src='logo_app.svg' className='w-100 rounded-top'  alt="Sample photo"/>
 
             <MDBCardBody className='px-5'>

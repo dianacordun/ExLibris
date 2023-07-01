@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '../../features/user/userSlice';
 import { signInWithGoogle, signInWithFacebook } from '../services/thirdparty';
 import { Helmet } from 'react-helmet';
+import { admins } from '../../config';
  
 const SignIn = () => {
     const [email, setEmail] = useState('');
@@ -35,6 +36,12 @@ const SignIn = () => {
                 const user = userCredential.user;
                 console.log(user);
                 dispatch(setUser({id: user.uid, email: user.email, emailVerified: user.emailVerified}));
+
+                // If the user is an admin
+                if(admins.includes(user.uid)){
+                    console.log("user is admin");
+                    localStorage.setItem('admin', true);
+                }
 
                 // Save user in local storage
                 localStorage.setItem('user', JSON.stringify({id: user.uid, email: user.email, emailVerified: user.emailVerified}));
@@ -68,6 +75,11 @@ const SignIn = () => {
         signInWithGoogle()
             .then((user) => {
                 if (user) {
+                    // If the user is an admin
+                    if(admins.includes(user.uid)){
+                        console.log("user is admin");
+                        localStorage.setItem('admin', true);
+                    }
                     dispatch(setUser({ id: user.uid, email: user.email, emailVerified: user.emailVerified }));
                     localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email, emailVerified: user.emailVerified }));
                     navigate("/");
@@ -80,6 +92,12 @@ const SignIn = () => {
         signInWithFacebook()
             .then((user) => {
                 if (user) {
+                    // If the user is an admin
+                    if(admins.includes(user.uid)){
+                        console.log("user is admin");
+                        localStorage.setItem('admin', true);
+                    }
+                    
                     dispatch(setUser({ id: user.uid, email: user.email, emailVerified: user.emailVerified }));
                     localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email, emailVerified: user.emailVerified }));
                     navigate("/");

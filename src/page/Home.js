@@ -1,5 +1,6 @@
 import Layout from "../components/Layout";
 import SignIn from '../components/user/SignIn';
+import AdminInterface from './AdminInterface';
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -22,6 +23,7 @@ const Home = () => {
     const userId = user?.id;
     const isSignedIn = !!user ;
     console.log(user);
+    const isAdmin = localStorage.getItem('admin');
 
     useEffect(() => {
         if(isSignedIn){
@@ -43,6 +45,7 @@ const Home = () => {
             dispatch(setExistingProfile(false));
             dispatch(setProfileDetails(null));
             localStorage.removeItem('profileExists');
+            localStorage.removeItem('admin');
         }
       }, [userId, dispatch, isSignedIn]);
 
@@ -50,9 +53,15 @@ const Home = () => {
     return(
         <div>
             {isSignedIn ? (
-                <Layout title='ExLibris | Home' content='Home Page'>
-                    <Dashboard userId = {userId}/>
-                </Layout>
+                    <>
+                    {isAdmin ? (
+                        <AdminInterface/>
+                    ) : (
+                        <Layout title='ExLibris | Home' content='Home Page'>
+                            <Dashboard userId = {userId}/>
+                        </Layout>
+                        )}
+                    </>
                 ) : (
                 <SignIn/>
             )}
