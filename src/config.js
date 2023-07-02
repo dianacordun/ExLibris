@@ -16,5 +16,5 @@ const genreOptions = [
 
 export default genreOptions;
 
-const admins = ['XztsBdU3fePCpQa5511Fdu4junQ2'];
+const admins = ['WPtLK2DpuVN1XIz1z1riD9PjErp1'];
 export { admins };

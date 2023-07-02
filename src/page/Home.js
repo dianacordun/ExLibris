@@ -22,7 +22,6 @@ const Home = () => {
     const user = useSelector((state) => state.user.value);
     const userId = user?.id;
     const isSignedIn = !!user ;
-    console.log(user);
     const isAdmin = localStorage.getItem('admin');
 
     useEffect(() => {

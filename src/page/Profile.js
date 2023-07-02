@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import CreateProfile from '../components/profile/CreateProfile';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import ProfileManager from '../components/profile/ProfileManager';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db, storage } from '../firebase';
+import { db, storage, auth } from '../firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { setProfileDetails } from '../features/user/profileDetailsSlice';
 import { Spinner, Modal, Button } from 'react-bootstrap';
+import { onIdTokenChanged  } from 'firebase/auth';
+
 
 const fetchProfileData = async (userId) => {
     try {
@@ -60,7 +61,6 @@ const Profile = () => {
   console.log(user);
   const userId = user?.id;
   const dispatch = useDispatch()
-  const navigate = useNavigate();
 
   // Checking to see if profile exists to display the proper page
   const profile = useSelector((state) => state.profile.value);
@@ -84,14 +84,23 @@ const Profile = () => {
       }
       setLoading(false);
     };
-    setEmailVerified(user?.emailVerified);
+
+    try {
+      onIdTokenChanged(auth, (user) => {
+        if (user) {
+          setEmailVerified(user.emailVerified);
+        }
+      });
+    } catch (error) {
+      console.log('Error fetching user:', error);
+    }
     fetchData();
   }, [existingProfile, userId, dispatch, firstName, lastName, totalPagesRead, totalTimeReading, user.emailVerified]);
 
 
   const handleCloseModal = () => {
     setShowModal(false);
-    navigate('/');
+    window.location.reload();
   }
 
   // Check if email is verified, if not, display modal
