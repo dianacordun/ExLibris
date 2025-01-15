@@ -1,6 +1,3 @@
-# Project for my Bachelor's thesis.
-[Link to thesis (Romanian) ](https://github.com/dianacordun/ExLibris/files/14238490/Licenta-Cordun-Diana.pdf)
-
 🔝 Here you will find ExLibris, a web application created to guide
 users through efficiently monitoring their ongoing reading activities.
 
