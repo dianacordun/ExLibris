@@ -8,7 +8,7 @@ progress do not cease to appear.
 
 📚 ExLibris presents a creative yet easy-to-understand solution to the problems readers
 face in observing their reading patterns. The application allows users to start reading
-sessions, add what books they want to their library, and promotes an organized approach
+sessions, add what books they want to their library and promotes an organized approach
 to reading, be it for academic or entertainment purposes.
 More than that, ExLibris offers a feeling of accomplishment to its users, allowing
 them to observe their progress with each book they read. The element
