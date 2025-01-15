@@ -16,3 +16,7 @@ that makes the application original is especially the personalized statistics fo
 every user. The users can follow a graphic representation of the evolution of the average
 time spent on a page. Using these data, the time remaining until the end of each
 book will be estimated for them.
+
+![image](https://github.com/user-attachments/assets/04560237-e8de-445d-8cfc-20f86d7b053b)
+
+
